@@ -1,4 +1,5 @@
 # 04_texture_mapping_win32
+![](screenshot.png?raw=true)
 
 This basic Vulkan application follows the fourth chapter (Texture Mapping) of the excellent [Vulkan
 Tutorial](https://vulkan-tutorial.com), building on the application at `03_uniform_buffers`. It demonstrates:

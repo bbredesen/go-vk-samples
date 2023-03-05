@@ -1,4 +1,5 @@
 # 06_loading_models_win32
+![](screenshot.png?raw=true)
 
 This basic Vulkan application follows the sixth chapter (Loading Models) of the excellent [Vulkan
 Tutorial](https://vulkan-tutorial.com), building on the application at `05_depth_buffer`. There is not much to be done,

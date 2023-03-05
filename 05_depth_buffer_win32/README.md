@@ -1,4 +1,5 @@
-# 04_texture_mapping_win32
+# 05_depth_buffer_win32
+![](screenshot.png?raw=true)
 
 This basic Vulkan application follows the fifth chapter (Depth Buffers) of the excellent [Vulkan
 Tutorial](https://vulkan-tutorial.com), building on the application at `04_texture_mapping`. It demonstrates creation of

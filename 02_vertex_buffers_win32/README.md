@@ -1,4 +1,5 @@
 # 02_vertex_buffers_win32
+![](screenshot.png?raw=true)
 
 This basic Vulkan application follows the second chapter (Vertex Buffers) of the excellent [Vulkan
 Tutorial](https://vulkan-tutorial.com), building on the application at `01_single_triangle_win32`. It demonstrates:

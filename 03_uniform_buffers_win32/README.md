@@ -1,4 +1,5 @@
 # 03_uniform_buffers_win32
+![](screenshot.png?raw=true)
 
 This basic Vulkan application follows the third chapter (Uniform Buffers) of the excellent [Vulkan
 Tutorial](https://vulkan-tutorial.com), building on the application at `02_vertex_buffers`. It demonstrates:
