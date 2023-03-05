@@ -1,5 +1,7 @@
 # 01_single_triangle_win32
 
+![01](01_single_triangle/screenshot.png?raw=true)
+
 This basic Vulkan application follows the first chapter (Drawing a Triangle) of the excellent [Vulkan
 Tutorial](https://vulkan-tutorial.com). It demonstrates:
 
