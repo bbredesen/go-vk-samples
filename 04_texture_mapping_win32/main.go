@@ -26,7 +26,7 @@ func main() {
 	app := NewApp()
 
 	// Initialize the app and open the window
-	app.Initialize("02_vertex_buffers")
+	app.Initialize("04_texture_mapping_win32")
 
 	app.InitVulkan()
 	app.MainLoop()

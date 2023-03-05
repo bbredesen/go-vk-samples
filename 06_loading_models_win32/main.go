@@ -13,8 +13,8 @@ import (
 // Buffers" chapter
 
 func main() {
-	fmt.Printf("Win32 Vulkan - Uniform Buffers\n")
-	fmt.Printf("This program demonstrates the use of uniform buffers in Vulkan.\n\n")
+	fmt.Printf("Win32 Vulkan - Loading Models\n")
+	fmt.Printf("This program demonstrates loading and displaying an OBJ model in Vulkan.\n\n")
 
 	if r, ver := vk.EnumerateInstanceVersion(); r != vk.SUCCESS {
 		fmt.Printf("ERROR: Could not get installed Vulkan version. Result code was %s\n", r.String())
@@ -26,7 +26,7 @@ func main() {
 	app := NewApp()
 
 	// Initialize the app and open the window
-	app.Initialize("02_vertex_buffers")
+	app.Initialize("06_loading_models_win32")
 
 	app.InitVulkan()
 	app.MainLoop()
