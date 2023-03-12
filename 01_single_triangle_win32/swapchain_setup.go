@@ -28,7 +28,7 @@ func (app *App_01) createSwapchain() {
 	// 1) General capabilities
 	r, surfaceCapabilities := vk.GetPhysicalDeviceSurfaceCapabilitiesKHR(app.physicalDevice, app.surface)
 	if r != vk.SUCCESS {
-		panic("Could not get device surface capabilities: " + r.String())
+		panic("Could not get device surface capabilities: ")
 	}
 
 	// 2) Image formats
@@ -36,13 +36,13 @@ func (app *App_01) createSwapchain() {
 		app.physicalDevice, app.surface,
 	)
 	if r != vk.SUCCESS {
-		panic("Could not get device surface formats: " + r.String())
+		panic("Could not get device surface formats: ")
 	}
 
 	// 3) Supported present modes
 	r, presentModes := vk.GetPhysicalDeviceSurfacePresentModesKHR(app.physicalDevice, app.surface)
 	if r != vk.SUCCESS {
-		panic("Could not get device surface present modes: " + r.String())
+		panic("Could not get device surface present modes: ")
 	}
 
 	// 4) Decide on swapchain size

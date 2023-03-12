@@ -2,14 +2,14 @@ package main
 
 import (
 	"github.com/bbredesen/go-vk"
-	"github.com/bbredesen/go-vk-samples/shared"
+
+	"github.com/go-gl/glfw/v3.3/glfw"
 )
 
 type App_01 struct {
-	*shared.Win32App
-	messages                                                          <-chan shared.WindowMessage
 	enableInstanceExtensions, enableDeviceExtensions, enableApiLayers []string
 
+	window   *glfw.Window
 	instance vk.Instance
 	surface  vk.SurfaceKHR
 
@@ -51,15 +51,14 @@ type App_01 struct {
 }
 
 func NewApp() App_01 {
-	c := make(chan shared.WindowMessage, 32)
-	winapp := shared.NewWin32App(c)
-
 	return App_01{
-		Win32App:                 winapp,
-		messages:                 c,
-		enableInstanceExtensions: winapp.GetRequiredInstanceExtensions(),
-		enableDeviceExtensions:   []string{"VK_KHR_swapchain"},
-		enableApiLayers:          []string{},
+		enableInstanceExtensions: []string{
+			"VK_KHR_surface", "VK_EXT_metal_surface",
+			"VK_EXT_debug_report",
+			"VK_EXT_debug_utils",
+		},
+		enableDeviceExtensions: []string{"VK_KHR_swapchain"},
+		enableApiLayers:        []string{},
 	}
 }
 
@@ -67,23 +66,7 @@ func (app *App_01) MainLoop() {
 
 	// Read any system messages...input, resize, window close, etc.
 	for {
-	innerLoop:
-		for {
-			select {
-			case msg := <-app.messages:
-				// fmt.Println(msg.Text)
-				switch msg.Text {
-				case "DESTROY":
-					// Break out of the loop
-					return
-
-				}
-			default:
-				// Pull everything off the queue, then continue the outer loop
-				break innerLoop // "break" will break out of the select statement, not the loop, so we have to use a break label
-			}
-
-		}
+		glfw.PollEvents()
 
 		// Rendering goes here
 		app.drawFrame()
@@ -91,8 +74,18 @@ func (app *App_01) MainLoop() {
 	}
 }
 
-func (app *App_01) InitVulkan() {
+func (app *App_01) Initialize(windowTitle string) {
 
+	glfw.WindowHint(glfw.ClientAPI, glfw.NoAPI)
+
+	var err error
+	app.window, err = glfw.CreateWindow(640, 480, windowTitle, nil, nil)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func (app *App_01) InitVulkan() {
 	app.createInstance()
 	app.createSurface()
 
@@ -136,7 +129,7 @@ func (app *App_01) drawFrame() {
 			app.recreateSwapchain()
 			return
 		} else {
-			panic("Could not acquire next image! " + r.String())
+			panic("Could not acquire next image!")
 		}
 	}
 
@@ -153,7 +146,7 @@ func (app *App_01) drawFrame() {
 	}
 
 	if r := vk.QueueSubmit(app.graphicsQueue, []vk.SubmitInfo{submitInfo}, app.inFlightFence); r != vk.SUCCESS {
-		panic("Could not submit to graphics queue! " + r.String())
+		panic("Could not submit to graphics queue! ")
 	}
 
 	// Present the drawn image
@@ -164,7 +157,7 @@ func (app *App_01) drawFrame() {
 	}
 
 	if r := vk.QueuePresentKHR(app.presentQueue, &presentInfo); r != vk.SUCCESS && r != vk.SUBOPTIMAL_KHR && r != vk.ERROR_OUT_OF_DATE_KHR {
-		panic("Could not submit to presentation queue! " + r.String())
+		panic("Could not submit to presentation queue! ")
 	}
 
 }

@@ -14,7 +14,7 @@ func (app *App_01) createCommandPool() {
 	}
 	r, commandPool := vk.CreateCommandPool(app.device, &poolCreateInfo, nil)
 	if r != vk.SUCCESS {
-		panic("Could not create command pool! " + r.String())
+		panic("Could not create command pool! ")
 	}
 	app.commandPool = commandPool
 
@@ -26,7 +26,7 @@ func (app *App_01) createCommandPool() {
 	}
 	r, commandBuffers := vk.AllocateCommandBuffers(app.device, &allocInfo)
 	if r != vk.SUCCESS {
-		panic("Could not allocate command buffers! " + r.String())
+		panic("Could not allocate command buffers! ")
 	}
 	app.commandBuffers = commandBuffers
 }
@@ -41,13 +41,13 @@ func (app *App_01) createSyncObjects() {
 
 	r, imgSem := vk.CreateSemaphore(app.device, &createInfo, nil)
 	if r != vk.SUCCESS {
-		panic("Could not create semaphore! " + r.String())
+		panic("Could not create semaphore! ")
 	}
 	app.imageAvailableSemaphore = imgSem
 
 	r, renSem := vk.CreateSemaphore(app.device, &createInfo, nil)
 	if r != vk.SUCCESS {
-		panic("Could not create semaphore! " + r.String())
+		panic("Could not create semaphore! ")
 	}
 	app.renderFinishedSemaphore = renSem
 
@@ -55,7 +55,7 @@ func (app *App_01) createSyncObjects() {
 		Flags: vk.FENCE_CREATE_SIGNALED_BIT,
 	}
 	if r, app.inFlightFence = vk.CreateFence(app.device, &fenceCreateInfo, nil); r != vk.SUCCESS {
-		panic("Could not create fence! " + r.String())
+		panic("Could not create fence! ")
 	}
 }
 
@@ -72,7 +72,7 @@ func (app *App_01) recordCommandBuffer(buffer vk.CommandBuffer, imageIndex uint3
 	}
 
 	if r := vk.BeginCommandBuffer(buffer, &cbBeginInfo); r != vk.SUCCESS {
-		panic("Could not begin command buffer recording! " + r.String())
+		panic("Could not begin command buffer recording! ")
 	}
 
 	rpBeginInfo := vk.RenderPassBeginInfo{
@@ -99,6 +99,6 @@ func (app *App_01) recordCommandBuffer(buffer vk.CommandBuffer, imageIndex uint3
 	vk.CmdEndRenderPass(buffer)
 
 	if r := vk.EndCommandBuffer(buffer); r != vk.SUCCESS {
-		panic("Could not end command buffer recording! " + r.String())
+		panic("Could not end command buffer recording! ")
 	}
 }
