@@ -17,7 +17,7 @@ func main() {
 	fmt.Printf("This program does the absolute minimum amount of work to validate go-vk, which is to get and print your Vulkan version, create an instance, and then destroy it.\n\n")
 
 	if r, ver := vk.EnumerateInstanceVersion(); r != vk.SUCCESS {
-		fmt.Printf("ERROR: Could not get installed Vulkan version. Result code was %s\n", r.String())
+		fmt.Printf("ERROR: Could not get installed Vulkan version. Result code was %d\n", r)
 		// ERROR_OUT_OF_HOST_MEMORY is the only error code possible, per the spec.
 	} else {
 		fmt.Printf("Vulkan Library API version %s\n", versionToString(ver))
@@ -38,7 +38,7 @@ func main() {
 	var instance vk.Instance
 
 	if r, instance = vk.CreateInstance(&ci, nil); r != vk.SUCCESS {
-		panic("Failed to create an instance, error code was " + r.String())
+		panic(fmt.Errorf("Failed to create an instance, error code was %d", r))
 	}
 	fmt.Printf("Instance created, handle value is 0x%x\n", instance)
 

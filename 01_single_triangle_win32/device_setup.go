@@ -2,20 +2,25 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"unsafe"
 
 	"github.com/bbredesen/go-vk"
-	"golang.org/x/sys/windows"
+	"github.com/go-gl/glfw/v3.3/glfw"
 )
 
 func (app *App_01) createInstance() {
+	log.Println("vulkan supported:", glfw.VulkanSupported())
+	log.Println("required instance extensions:", app.window.GetRequiredInstanceExtensions())
+
 	appInfo := vk.ApplicationInfo{
 		PApplicationName:   "01_minimal_app",
 		ApplicationVersion: vk.MAKE_VERSION(1, 0, 0),
 		EngineVersion:      vk.MAKE_VERSION(1, 0, 0),
-		ApiVersion:         vk.MAKE_VERSION(1, 2, 0),
+		ApiVersion:         vk.MAKE_VERSION(1, 1, 0),
 	}
 
-	app.enableApiLayers = append(app.enableApiLayers, "VK_LAYER_KHRONOS_validation")
+	// app.enableApiLayers = append(app.enableApiLayers, "VK_LAYER_KHRONOS_validation")
 
 	icInfo := vk.InstanceCreateInfo{
 		PApplicationInfo:        &appInfo,
@@ -27,29 +32,24 @@ func (app *App_01) createInstance() {
 	r, app.instance = vk.CreateInstance(&icInfo, nil)
 
 	if r != vk.SUCCESS {
-		fmt.Println("Could not create instance!")
-		panic(r.String())
+		panic("Could not create instance!")
 	}
 }
 
 func (app *App_01) createSurface() {
-	ci := vk.Win32SurfaceCreateInfoKHR{
-		Hinstance: windows.Handle(app.Win32App.HInstance),
-		Hwnd:      windows.HWND(app.Win32App.HWnd),
+	instancePtr := (*vk.Instance)(unsafe.Pointer(app.instance))
+	surfPtr, err := app.window.CreateWindowSurface(instancePtr, nil)
+	if err != nil {
+		panic(err)
 	}
 
-	var r vk.Result
-	r, app.surface = vk.CreateWin32SurfaceKHR(app.instance, &ci, nil)
-	if r != vk.SUCCESS {
-		fmt.Printf("Could not create surface!\n")
-		panic(r)
-	}
+	app.surface = vk.SurfaceKHR(surfPtr)
 }
 
 func (app *App_01) selectPhysicalDevice() {
 	r, devices := vk.EnumeratePhysicalDevices(app.instance)
 	if r != vk.SUCCESS {
-		panic("Could not enumerate physical devices: " + r.String())
+		panic("Could not enumerate physical devices: ")
 	}
 
 	for _, dev := range devices {
@@ -90,7 +90,7 @@ func (app *App_01) isDeviceSuitable(device vk.PhysicalDevice) bool {
 func (app *App_01) checkDeviceExtensionSupport(device vk.PhysicalDevice) bool {
 	r, devExtensions := vk.EnumerateDeviceExtensionProperties(device, "")
 	if r != vk.SUCCESS {
-		panic(r.String() + ": Could not enumerate device extension properties!")
+		panic("Could not enumerate device extension properties!")
 	}
 
 	foundProps := make(map[string]bool, len(app.enableDeviceExtensions))
@@ -180,7 +180,7 @@ func (app *App_01) createLogicalDevice() {
 	r, device := vk.CreateDevice(app.physicalDevice, &createInfo, nil)
 
 	if r != vk.SUCCESS {
-		fmt.Printf("Logical device creation failed! (%s)\n", r.String())
+		fmt.Printf("Logical device creation failed!")
 		panic(r)
 	}
 	app.device = device
