@@ -6,8 +6,11 @@ import (
 )
 
 type App_02 struct {
-	*shared.Win32App
-	messages                                                          <-chan shared.WindowMessage
+	shared.App
+
+	eventsChannel <-chan shared.EventMessage
+	windowHandle  uintptr
+
 	enableInstanceExtensions, enableDeviceExtensions, enableApiLayers []string
 
 	instance vk.Instance
@@ -53,45 +56,38 @@ type App_02 struct {
 	vertexBufferMemory, indexBufferMemory vk.DeviceMemory
 }
 
-func NewApp() App_02 {
-	c := make(chan shared.WindowMessage, 32)
-	winapp := shared.NewWin32App(c)
+func NewApp() *App_02 {
+	sharedApp, _ := shared.NewApp()
 
-	return App_02{
-		Win32App:                 winapp,
-		messages:                 c,
-		enableInstanceExtensions: winapp.GetRequiredInstanceExtensions(),
+	return &App_02{
+		App:           sharedApp,
+		eventsChannel: sharedApp.GetEventChannel(),
+
+		enableInstanceExtensions: sharedApp.GetRequiredInstanceExtensions(),
 		enableDeviceExtensions:   []string{"VK_KHR_swapchain"},
 		enableApiLayers:          []string{},
 	}
 }
 
-func (app *App_02) MainLoop() {
-
-	// Read any system messages...input, resize, window close, etc.
+func (app *App_02) MainLoop(ch <-chan shared.EventMessage) {
 	for {
-	innerLoop:
-		for {
-			select {
-			case msg := <-app.messages:
-				// fmt.Println(msg.Text)
-				switch msg.Text {
-				case "DESTROY":
-					// Break out of the loop
-					return
-
-				}
-			default:
-				// Pull everything off the queue, then continue the outer loop
-				break innerLoop // "break" will break out of the select statement, not the loop, so we have to use a break label
+		// Read any system messages...input, resize, window close, etc.
+		for m, open := <-ch; open; m, open = <-ch {
+			switch m.Type {
+			case shared.ET_Sys_Create:
+				app.InitVulkan()
 			}
-
 		}
-
 		// Rendering goes here
 		app.drawFrame()
-
 	}
+}
+
+func (app *App_02) Run(windowTitle string) {
+	go app.MainLoop(app.App.GetEventChannel())
+
+	app.App.Run()
+
 }
 
 func (app *App_02) InitVulkan() {

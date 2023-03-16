@@ -6,14 +6,14 @@ import (
 	"github.com/bbredesen/go-vk"
 )
 
-//go:generate glslc.exe shaders/shader.vert -o shaders/vert.spv
-//go:generate glslc.exe shaders/shader.frag -o shaders/frag.spv
+//go:generate glslc shaders/shader.vert -o shaders/vert.spv
+//go:generate glslc shaders/shader.frag -o shaders/frag.spv
 
 // This demonstration app is based on the introductory app at https://vulkan-tutorial.com and lines up with the "Drawing
 // a triangle" chapter
 
 func main() {
-	fmt.Printf("Win32 Vulkan - Vertex Buffers\n")
+	fmt.Printf("go-vk Vulkan - Vertex Buffers\n")
 	fmt.Printf("This program demonstrates the use of vertex buffers in Vulkan.\n\n")
 
 	if r, ver := vk.EnumerateInstanceVersion(); r != vk.SUCCESS {
@@ -25,11 +25,12 @@ func main() {
 
 	app := NewApp()
 
+	app.Run("02_vertex_buffers")
 	// Initialize the app and open the window
-	app.Initialize("02_vertex_buffers")
+	// app.Initialize("02_vertex_buffers")
 
-	app.InitVulkan()
-	app.MainLoop()
+	// app.InitVulkan()
+	// app.MainLoop()
 	app.CleanupVulkan()
 
 	fmt.Println()

@@ -60,16 +60,8 @@ func (app *App_02) createVertexBuffer() {
 		panic("Could not map memory for vertex buffer: " + r.String())
 	}
 
-	// MapMemory needs to return a []byte maybe...shouldn't have to do this:
-	var sl = struct {
-		addr uintptr
-		len  int
-		cap  int
-	}{uintptr(unsafe.Pointer(ptr)), int(size), int(size)}
-	bytes := *(*[]byte)(unsafe.Pointer(&sl))
+	vk.MemCopySlice(unsafe.Pointer(ptr), verts)
 
-	vb := AnySliceToBytes(verts)
-	copy(bytes, vb)
 	vk.UnmapMemory(app.device, stagingBufferMemory)
 
 	app.vertexBuffer, app.vertexBufferMemory = app.createBuffer(vk.BUFFER_USAGE_VERTEX_BUFFER_BIT|vk.BUFFER_USAGE_TRANSFER_DST_BIT, size, vk.MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
@@ -91,16 +83,7 @@ func (app *App_02) createIndexBuffer() {
 		panic("Could not map memory for vertex buffer: " + r.String())
 	}
 
-	// MapMemory needs to return a []byte maybe...shouldn't have to do this:
-	var sl = struct {
-		addr uintptr
-		len  int
-		cap  int
-	}{uintptr(unsafe.Pointer(ptr)), int(size), int(size)}
-	bytes := *(*[]byte)(unsafe.Pointer(&sl))
-
-	vb := AnySliceToBytes(indices)
-	copy(bytes, vb)
+	vk.MemCopySlice(unsafe.Pointer(ptr), indices)
 
 	vk.UnmapMemory(app.device, stagingBufferMemory)
 
@@ -122,22 +105,4 @@ func (app *App_02) findMemoryType(typeFilter uint32, flags vk.MemoryPropertyFlag
 		}
 	}
 	panic("Could not find appropriate memory type.")
-}
-
-// VERY MUCH TODO: This or something similar should be a convenience function provided with go-vk
-func AnySliceToBytes[T any](input []T) []byte {
-	type sl struct {
-		addr uintptr
-		len  int
-		cap  int
-	}
-
-	if len(input) == 0 {
-		return []byte{}
-	}
-
-	inputLen := len(input) * int(unsafe.Sizeof(input[0]))
-	sl_input := sl{uintptr(unsafe.Pointer(&input[0])), inputLen, inputLen}
-
-	return *(*[]byte)(unsafe.Pointer(&sl_input))
 }
