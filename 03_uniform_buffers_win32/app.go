@@ -98,6 +98,7 @@ func (app *App_03) MainLoop(ch <-chan shared.EventMessage) {
 	for {
 		// Read any system messages...input, resize, window close, etc.
 		// for m, open := <-ch; open; m, open = <-ch {
+	innerLoop:
 		for {
 			select {
 			case m := <-ch:
@@ -106,12 +107,11 @@ func (app *App_03) MainLoop(ch <-chan shared.EventMessage) {
 				// 	app.InitVulkan()
 				}
 			default:
-				goto draw
+				break innerLoop
 
 			}
 		}
 		// Rendering goes here
-	draw:
 		app.drawFrame()
 	}
 }
