@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/bbredesen/go-vk"
-	"golang.org/x/sys/windows"
 )
 
 func (app *App_04) createInstance() {
@@ -15,7 +14,7 @@ func (app *App_04) createInstance() {
 		ApiVersion:         vk.MAKE_VERSION(1, 2, 0),
 	}
 
-	app.enableApiLayers = append(app.enableApiLayers, "VK_LAYER_KHRONOS_validation")
+	// app.enableApiLayers = append(app.enableApiLayers, "VK_LAYER_KHRONOS_validation")
 
 	icInfo := vk.InstanceCreateInfo{
 		PApplicationInfo:        &appInfo,
@@ -33,17 +32,18 @@ func (app *App_04) createInstance() {
 }
 
 func (app *App_04) createSurface() {
-	ci := vk.Win32SurfaceCreateInfoKHR{
-		Hinstance: windows.Handle(app.Win32App.HInstance),
-		Hwnd:      windows.HWND(app.Win32App.HWnd),
-	}
+	// ci := vk.Win32SurfaceCreateInfoKHR{
+	// 	Hinstance: windows.Handle(app.Win32App.HInstance),
+	// 	Hwnd:      windows.HWND(app.Win32App.HWnd),
+	// }
 
-	var r vk.Result
-	r, app.surface = vk.CreateWin32SurfaceKHR(app.instance, &ci, nil)
-	if r != vk.SUCCESS {
-		fmt.Printf("Could not create surface!\n")
-		panic(r)
-	}
+	// var r vk.Result
+	// r, app.surface = vk.CreateWin32SurfaceKHR(app.instance, &ci, nil)
+	// if r != vk.SUCCESS {
+	// 	fmt.Printf("Could not create surface!\n")
+	// 	panic(r)
+	// }
+	app.surface = app.DelegateCreateSurface(app.instance)
 }
 
 func (app *App_04) selectPhysicalDevice() {

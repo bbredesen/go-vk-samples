@@ -11,8 +11,9 @@ import (
 )
 
 type App_04 struct {
-	*shared.Win32App
-	messages                                                          <-chan shared.WindowMessage
+	shared.App
+	eventsChannel <-chan shared.EventMessage
+
 	enableInstanceExtensions, enableDeviceExtensions, enableApiLayers []string
 
 	instance vk.Instance
@@ -78,13 +79,12 @@ type App_04 struct {
 }
 
 func NewApp() App_04 {
-	c := make(chan shared.WindowMessage, 32)
-	winapp := shared.NewWin32App(c)
+	sharedApp, _ := shared.NewApp()
 
 	return App_04{
-		Win32App:                 winapp,
-		messages:                 c,
-		enableInstanceExtensions: winapp.GetRequiredInstanceExtensions(),
+		App:                      sharedApp,
+		eventsChannel:            sharedApp.GetEventChannel(),
+		enableInstanceExtensions: sharedApp.GetRequiredInstanceExtensions(),
 		enableDeviceExtensions:   []string{"VK_KHR_swapchain"},
 		enableApiLayers:          []string{},
 
@@ -92,32 +92,40 @@ func NewApp() App_04 {
 	}
 }
 
-func (app *App_04) MainLoop() {
+func (app *App_04) MainLoop(ch <-chan shared.EventMessage) {
 
-	// Read any system messages...input, resize, window close, etc.
+	m := <-ch
+	if m.Type != shared.ET_Sys_Create {
+		panic("expected ET_Sys_Create to start mainloop")
+	}
+	app.InitVulkan()
+
 	for {
+		// Read any system messages...input, resize, window close, etc.
+		// for m, open := <-ch; open; m, open = <-ch {
 	innerLoop:
 		for {
 			select {
-			case msg := <-app.messages:
-				// fmt.Println(msg.Text)
-				switch msg.Text {
-				case "DESTROY":
-					// Break out of the loop
-					return
-
+			case m := <-ch:
+				switch m.Type {
+				// case shared.ET_Sys_Create:
+				// 	app.InitVulkan()
 				}
 			default:
-				// Pull everything off the queue, then continue the outer loop
-				break innerLoop // "break" will break out of the select statement, not the loop, so we have to use a break label
+				break innerLoop
+
 			}
-
 		}
-
 		// Rendering goes here
 		app.drawFrame()
-
 	}
+}
+
+func (app *App_04) Run(windowTitle string) {
+
+	go app.MainLoop(app.App.GetEventChannel())
+
+	app.App.Run()
 }
 
 func (app *App_04) InitVulkan() {

@@ -40,10 +40,10 @@ func (app *App_04) createDescriptorSetLayout() {
 func (app *App_04) createUniformBuffers() {
 	bufferSize := vk.DeviceSize(unsafe.Sizeof(UniformBufferObject{}))
 
-	app.uboObjs = make([]UniformBufferObject, 2)
-	app.uniformBuffers = make([]vk.Buffer, 2)
-	app.uniformBufferMemories = make([]vk.DeviceMemory, 2)
-	app.uniformBufferMapped = make([]*byte, 2)
+	app.uboObjs = make([]UniformBufferObject, len(app.swapchainImages))
+	app.uniformBuffers = make([]vk.Buffer, len(app.swapchainImages))
+	app.uniformBufferMemories = make([]vk.DeviceMemory, len(app.swapchainImages))
+	app.uniformBufferMapped = make([]*byte, len(app.swapchainImages))
 
 	for i := range app.uniformBuffers {
 		app.uboObjs[i] = UniformBufferObject{
@@ -76,15 +76,15 @@ func (app *App_04) cleanupUniformBuffers() {
 func (app *App_04) createDescriptorPool() {
 	uboPoolSize := vk.DescriptorPoolSize{
 		Typ:             vk.DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-		DescriptorCount: 2,
+		DescriptorCount: uint32(len(app.swapchainImages)),
 	}
 	samplerPoolSize := vk.DescriptorPoolSize{
 		Typ:             vk.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-		DescriptorCount: 2,
+		DescriptorCount: uint32(len(app.swapchainImages)),
 	}
 
 	poolCI := vk.DescriptorPoolCreateInfo{
-		MaxSets:    4,
+		MaxSets:    uint32(len(app.swapchainImages)),
 		PPoolSizes: []vk.DescriptorPoolSize{uboPoolSize, samplerPoolSize},
 	}
 
@@ -95,11 +95,13 @@ func (app *App_04) createDescriptorPool() {
 }
 
 func (app *App_04) createDescriptorSets() {
-
 	allocInfo := vk.DescriptorSetAllocateInfo{
 		DescriptorPool: app.descriptorPool,
 
-		PSetLayouts: []vk.DescriptorSetLayout{app.descriptorSetLayout, app.descriptorSetLayout},
+		PSetLayouts: make([]vk.DescriptorSetLayout, len(app.swapchainImages)),
+	}
+	for i := range allocInfo.PSetLayouts {
+		allocInfo.PSetLayouts[i] = app.descriptorSetLayout
 	}
 
 	var r vk.Result

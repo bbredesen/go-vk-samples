@@ -6,8 +6,8 @@ import (
 	"github.com/bbredesen/go-vk"
 )
 
-//go:generate glslc.exe shaders/shader.vert -o shaders/vert.spv
-//go:generate glslc.exe shaders/shader.frag -o shaders/frag.spv
+//go:generate glslc shaders/shader.vert -o shaders/vert.spv
+//go:generate glslc shaders/shader.frag -o shaders/frag.spv
 
 // This demonstration app is based on the introductory app at https://vulkan-tutorial.com and lines up with the "Uniform
 // Buffers" chapter
@@ -24,12 +24,12 @@ func main() {
 	}
 
 	app := NewApp()
-
+	app.Run("04_texture_mapping_win32")
 	// Initialize the app and open the window
-	app.Initialize("04_texture_mapping_win32")
+	// app.Initialize("04_texture_mapping_win32")
 
-	app.InitVulkan()
-	app.MainLoop()
+	// app.InitVulkan()
+	// app.MainLoop()
 	app.CleanupVulkan()
 
 	fmt.Println()
