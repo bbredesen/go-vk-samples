@@ -10,6 +10,8 @@ import "C"
 
 import (
 	"unsafe"
+
+	"github.com/bbredesen/go-vk"
 )
 
 func NewApp() (App, error) {
@@ -34,6 +36,21 @@ func (app *darwinApp) Run() error {
 	return nil
 }
 
-func (app *darwinApp) GetHandleForSurface() uintptr {
-	return uintptr(app.caLayer)
+// func (app *darwinApp) GetHandleForSurface() uintptr {
+// 	return uintptr(app.caLayer)
+// }
+
+func (app *darwinApp) CreateSurface(instance vk.Instance) vk.SurfaceKHR {
+	var r vk.Result
+	var surface vk.SurfaceKHR
+
+	ci := vk.MetalSurfaceCreateInfoEXT{
+		PLayer: (*vk.CAMetalLayer)(app.caLayer),
+	}
+
+	if r, surface = vk.CreateMetalSurfaceEXT(instance, &ci, nil); r != vk.SUCCESS {
+		panic(r)
+	} else {
+		return surface
+	}
 }

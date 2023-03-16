@@ -6,7 +6,8 @@ import (
 )
 
 type App_01 struct {
-	sharedApp     shared.App
+	shared.App
+
 	eventsChannel <-chan shared.EventMessage
 	windowHandle  uintptr
 
@@ -63,8 +64,7 @@ func NewApp() App_01 {
 		enableApiLayers:        []string{},
 	}
 
-	app.sharedApp, _ = shared.NewApp()
-	app.eventsChannel = app.sharedApp.GetEventChannel()
+	app.App, _ = shared.NewApp()
 
 	return app
 }
@@ -86,15 +86,15 @@ func (app *App_01) MainLoop(ch <-chan shared.EventMessage) {
 
 func (app *App_01) Run(windowTitle string) {
 
-	go app.MainLoop(app.sharedApp.GetEventChannel())
+	go app.MainLoop(app.App.GetEventChannel())
 
-	app.sharedApp.Run()
+	app.App.Run()
 
 }
 
 func (app *App_01) InitVulkan() {
 	app.createInstance()
-	app.createSurface()
+	app.surface = app.CreateSurface(app.instance) // Delegated to shared.App
 
 	app.selectPhysicalDevice()
 	app.createLogicalDevice()
