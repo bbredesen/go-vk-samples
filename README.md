@@ -1,5 +1,7 @@
 # go-vk-samples
 
+**NOTE:** This branch shared-framework-update is currently only working on Mac, is very incomplete, and only the 01_ sample has been updated to use the new framework. The go.mod file is looking for a local copy of go-vk via a replace statement. Generate your own or fetch the [1.2.203-darwin branch](https://github.com/bbredesen/go-vk/tree/1.2.203-darwin)
+
 This repository contains runnable sample apps to demonstrate use of [go-vk](https://github.com/bbredesen/go-vk), a
 Go-language binding for the Vulkan graphics and compute API. Samples currently only run under Windows.
 
