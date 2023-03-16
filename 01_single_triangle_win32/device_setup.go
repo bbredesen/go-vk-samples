@@ -2,22 +2,17 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"unsafe"
 
 	"github.com/bbredesen/go-vk"
-	"github.com/go-gl/glfw/v3.3/glfw"
 )
 
 func (app *App_01) createInstance() {
-	log.Println("vulkan supported:", glfw.VulkanSupported())
-	log.Println("required instance extensions:", app.window.GetRequiredInstanceExtensions())
 
 	appInfo := vk.ApplicationInfo{
 		PApplicationName:   "01_minimal_app",
 		ApplicationVersion: vk.MAKE_VERSION(1, 0, 0),
 		EngineVersion:      vk.MAKE_VERSION(1, 0, 0),
-		ApiVersion:         vk.MAKE_VERSION(1, 1, 0),
+		ApiVersion:         vk.HEADER_VERSION_COMPLETE,
 	}
 
 	// app.enableApiLayers = append(app.enableApiLayers, "VK_LAYER_KHRONOS_validation")
@@ -34,16 +29,6 @@ func (app *App_01) createInstance() {
 	if r != vk.SUCCESS {
 		panic("Could not create instance!")
 	}
-}
-
-func (app *App_01) createSurface() {
-	instancePtr := (*vk.Instance)(unsafe.Pointer(app.instance))
-	surfPtr, err := app.window.CreateWindowSurface(instancePtr, nil)
-	if err != nil {
-		panic(err)
-	}
-
-	app.surface = vk.SurfaceKHR(surfPtr)
 }
 
 func (app *App_01) selectPhysicalDevice() {

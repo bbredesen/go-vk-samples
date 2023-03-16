@@ -2,15 +2,13 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"runtime"
 
 	"github.com/bbredesen/go-vk"
-	"github.com/go-gl/glfw/v3.3/glfw"
 )
 
-// //go:generate glslc.exe shaders/shader.vert -o shaders/vert.spv
-// //go:generate glslc.exe shaders/shader.frag -o shaders/frag.spv
+//go:generate glslc shaders/shader.vert -o shaders/vert.spv
+//go:generate glslc shaders/shader.frag -o shaders/frag.spv
 
 // This demonstration app is based on the introductory app at https://vulkan-tutorial.com and lines up with the "Drawing
 // a triangle" chapter
@@ -20,12 +18,12 @@ func main() {
 	// See documentation for functions that are only allowed to be called from the main thread.
 	runtime.LockOSThread()
 
-	err := glfw.Init()
-	if err != nil {
-		panic(err)
-	}
-	defer glfw.Terminate()
-	log.Println("glfw initialized")
+	// err := glfw.Init()
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// defer glfw.Terminate()
+	// log.Println("glfw initialized")
 
 	fmt.Printf("Win32 Vulkan - Drawing a Triangle\n")
 	fmt.Printf("This program demonstrates opening a window, setting up the basics for Vulkan rendering, and draws a single triangle.\n\n")
@@ -40,10 +38,10 @@ func main() {
 	app := NewApp()
 
 	// Initialize the app and open the window
-	app.Initialize("01_single_triangle_win32")
+	app.Run("01_single_triangle_win32")
 
-	app.InitVulkan()
-	app.MainLoop()
+	// app.InitVulkan()
+	// app.MainLoop()
 	app.CleanupVulkan()
 
 	fmt.Println()

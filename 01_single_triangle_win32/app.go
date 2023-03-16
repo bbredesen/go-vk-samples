@@ -2,14 +2,16 @@ package main
 
 import (
 	"github.com/bbredesen/go-vk"
-
-	"github.com/go-gl/glfw/v3.3/glfw"
+	"github.com/bbredesen/go-vk-samples/shared"
 )
 
 type App_01 struct {
+	sharedApp     shared.App
+	eventsChannel <-chan shared.EventMessage
+	windowHandle  uintptr
+
 	enableInstanceExtensions, enableDeviceExtensions, enableApiLayers []string
 
-	window   *glfw.Window
 	instance vk.Instance
 	surface  vk.SurfaceKHR
 
@@ -51,7 +53,7 @@ type App_01 struct {
 }
 
 func NewApp() App_01 {
-	return App_01{
+	app := App_01{
 		enableInstanceExtensions: []string{
 			"VK_KHR_surface", "VK_EXT_metal_surface",
 			"VK_EXT_debug_report",
@@ -60,29 +62,34 @@ func NewApp() App_01 {
 		enableDeviceExtensions: []string{"VK_KHR_swapchain"},
 		enableApiLayers:        []string{},
 	}
+
+	app.sharedApp, _ = shared.NewApp()
+	app.eventsChannel = app.sharedApp.GetEventChannel()
+
+	return app
 }
 
-func (app *App_01) MainLoop() {
+func (app *App_01) MainLoop(ch <-chan shared.EventMessage) {
 
 	// Read any system messages...input, resize, window close, etc.
-	for {
-		glfw.PollEvents()
-
+	for m, open := <-ch; open; m, open = <-ch {
+		switch m.Type {
+		case shared.ET_Sys_Create:
+			app.windowHandle = m.HandleForSurface
+			app.InitVulkan()
+		}
 		// Rendering goes here
 		app.drawFrame()
 
 	}
 }
 
-func (app *App_01) Initialize(windowTitle string) {
+func (app *App_01) Run(windowTitle string) {
 
-	glfw.WindowHint(glfw.ClientAPI, glfw.NoAPI)
+	go app.MainLoop(app.sharedApp.GetEventChannel())
 
-	var err error
-	app.window, err = glfw.CreateWindow(640, 480, windowTitle, nil, nil)
-	if err != nil {
-		panic(err)
-	}
+	app.sharedApp.Run()
+
 }
 
 func (app *App_01) InitVulkan() {
