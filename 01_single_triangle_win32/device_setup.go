@@ -31,6 +31,10 @@ func (app *App_01) createInstance() {
 	}
 }
 
+func (app *App_01) createSurface() {
+	app.surface = app.DelegateCreateSurface(app.instance) // Delegated to shared.App
+}
+
 func (app *App_01) selectPhysicalDevice() {
 	r, devices := vk.EnumeratePhysicalDevices(app.instance)
 	if r != vk.SUCCESS {

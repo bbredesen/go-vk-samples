@@ -53,8 +53,8 @@ type App_01 struct {
 	vertShaderModule, fragShaderModule vk.ShaderModule
 }
 
-func NewApp() App_01 {
-	app := App_01{
+func NewApp() *App_01 {
+	app := &App_01{
 		enableInstanceExtensions: []string{
 			"VK_KHR_surface", "VK_EXT_metal_surface",
 			"VK_EXT_debug_report",
@@ -94,7 +94,7 @@ func (app *App_01) Run(windowTitle string) {
 
 func (app *App_01) InitVulkan() {
 	app.createInstance()
-	app.surface = app.CreateSurface(app.instance) // Delegated to shared.App
+	app.createSurface()
 
 	app.selectPhysicalDevice()
 	app.createLogicalDevice()
