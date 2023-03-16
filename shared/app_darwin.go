@@ -36,11 +36,14 @@ func (app *darwinApp) Run() error {
 	return nil
 }
 
-// func (app *darwinApp) GetHandleForSurface() uintptr {
-// 	return uintptr(app.caLayer)
-// }
+func (app *darwinApp) GetRequiredInstanceExtensions() []string {
+	return []string{
+		vk.KHR_SURFACE_EXTENSION_NAME,
+		vk.EXT_METAL_SURFACE_EXTENSION_NAME,
+	}
+}
 
-func (app *darwinApp) CreateSurface(instance vk.Instance) vk.SurfaceKHR {
+func (app *darwinApp) DelegateCreateSurface(instance vk.Instance) vk.SurfaceKHR {
 	var r vk.Result
 	var surface vk.SurfaceKHR
 

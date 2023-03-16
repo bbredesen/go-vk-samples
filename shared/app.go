@@ -14,7 +14,9 @@ type App interface {
 	// GetHandleForSurface() uintptr
 	Run() error
 
-	CreateSurface(instance vk.Instance) vk.SurfaceKHR
+	GetRequiredInstanceExtensions() []string
+
+	DelegateCreateSurface(instance vk.Instance) vk.SurfaceKHR
 }
 
 type sharedApp struct {
