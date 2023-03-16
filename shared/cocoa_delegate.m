@@ -5,18 +5,9 @@
 #import <MetalKit/MetalKit.h>
 
 @implementation GVKApplicationDelegate:NSObject 
-- (void)applicationWillFinishLaunching:(NSNotification *)notification {
-    printf("*** delegate will finish launching\n");
-
-    // [_window makeKeyAndOrderFront:nil];
-    // // Send go notification about create here? 
-    // gonotify_windowCreated();
-}
-
-- (void)dealloc {
-    // [_window release];
-    [super dealloc];
-}
+// - (void)applicationWillFinishLaunching:(NSNotification *)notification {
+//     printf("*** delegate will finish launching\n");
+// }
 
 -(void) windowWillClose:(NSNotification *) notification
 {

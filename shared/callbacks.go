@@ -1,9 +1,5 @@
 package shared
 
-import (
-	"fmt"
-)
-
 /*
 #include "go_bridge.h"
 */
@@ -21,7 +17,7 @@ func gonotify_windowCreated(handle uintptr) {
 
 //export gonotify_windowWillClose
 func gonotify_windowWillClose(handle uintptr) {
-	fmt.Println("window will close notification received")
+	// fmt.Println("window will close notification received")
 	globalChannel <- EventMessage{
 		Type: ET_Sys_Close,
 	}
@@ -30,12 +26,12 @@ func gonotify_windowWillClose(handle uintptr) {
 
 //export gonotify_keyDown
 func gonotify_keyDown(keyCode uint16) {
-	fmt.Println("key down, code:", keyCode)
+	// fmt.Println("key down, code:", keyCode)
 }
 
 //export gonotify_mouseDown
 func gonotify_mouseDown(button uint8, locationX, locationY uint16) {
-	fmt.Println("Button", button, "at", locationX, locationY)
+	// fmt.Println("Button", button, "at", locationX, locationY)
 	msg := EventMessage{
 		Type: ET_Mouse_ButtonDown,
 		MouseEvent: &MouseEvent{TriggerButtonMask: button,
@@ -48,7 +44,7 @@ func gonotify_mouseDown(button uint8, locationX, locationY uint16) {
 
 //export gonotify_mouseUp
 func gonotify_mouseUp(button uint8, locationX, locationY uint16) {
-	fmt.Println("Button", button, "at", locationX, locationY)
+	// fmt.Println("Button", button, "at", locationX, locationY)
 	msg := EventMessage{
 		Type: ET_Mouse_ButtonUp,
 		MouseEvent: &MouseEvent{TriggerButtonMask: button,

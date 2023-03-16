@@ -19,9 +19,7 @@ type App interface {
 	DelegateCreateSurface(instance vk.Instance) vk.SurfaceKHR
 }
 
-type sharedApp struct {
-	// c chan EventMessage
-}
+type sharedApp struct{}
 
 func (app *sharedApp) GetEventChannel() <-chan EventMessage {
 	return globalChannel

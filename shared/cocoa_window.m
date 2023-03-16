@@ -3,12 +3,6 @@
 
 #include <stdio.h>
 
-@implementation GVKWindow
-
-
-@end
-
-
 void* initCocoaWindow() {
     [NSAutoreleasePool new];
     [NSApplication sharedApplication];
@@ -34,7 +28,7 @@ void* initCocoaWindow() {
 
     NSRect contentRect = NSMakeRect(0, 0, 640, 480);
 
-    id window = [[[GVKWindow alloc] 
+    id window = [[[NSWindow alloc] 
             initWithContentRect:contentRect
             styleMask: NSWindowStyleMaskTitled|NSWindowStyleMaskClosable|NSWindowStyleMaskMiniaturizable
             backing:NSBackingStoreBuffered 
