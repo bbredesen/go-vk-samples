@@ -24,6 +24,31 @@ func gonotify_windowWillClose(handle uintptr) {
 	close(globalChannel)
 }
 
+//export gonotify_windowResizeStart
+func gonotify_windowResizeStart() {
+	globalChannel <- EventMessage{
+		Type: ET_Sys_ResizeStart,
+	}
+}
+
+//export gonotify_windowResizeProgress
+func gonotify_windowResizeProgress(width, height uint32) {
+	globalChannel <- EventMessage{
+		Type: ET_Sys_ResizeProgress,
+		SystemEvent: &SystemEvent{
+			WindowWidth:  width,
+			WindowHeight: height,
+		},
+	}
+}
+
+//export gonotify_windowResizeComplete
+func gonotify_windowResizeComplete() {
+	globalChannel <- EventMessage{
+		Type: ET_Sys_ResizeComplete,
+	}
+}
+
 //export gonotify_keyDown
 func gonotify_keyDown(keyCode uint16, keyRune uint32, modifiers uint32) {
 	msg := EventMessage{

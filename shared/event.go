@@ -82,5 +82,6 @@ const (
 
 // SystemEvent todo...window handle, process handle, others?
 type SystemEvent struct {
-	HandleForSurface uintptr
+	HandleForSurface          uintptr
+	WindowWidth, WindowHeight uint32
 }

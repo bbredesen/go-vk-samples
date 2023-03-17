@@ -15,6 +15,19 @@
     [NSApp stop:(nil)];
 }
 
+-(void) windowWillStartLiveResize:(NSNotification *)notification {
+    gonotify_windowResizeStart();
+}
+
+-(void) windowDidEndLiveResize:(NSNotification *)notification {
+    gonotify_windowResizeComplete();
+}
+
+-(NSSize) windowWillResize:(NSWindow *) window toSize:(NSSize)frameSize {
+    gonotify_windowResizeProgress(frameSize.width, frameSize.height);
+    return frameSize;
+}
+
 @end
 
 

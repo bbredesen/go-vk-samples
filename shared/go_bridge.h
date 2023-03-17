@@ -10,6 +10,9 @@ void runCocoaWindow();
 
 extern void gonotify_windowCreated(uintptr_t handle);
 extern void gonotify_windowWillClose(uintptr_t handle);
+extern void gonotify_windowResizeStart();
+extern void gonotify_windowResizeProgress(uint32_t width, uint32_t height);
+extern void gonotify_windowResizeComplete();
 
 extern void gonotify_keyDown(uint16_t keyCode, uint32_t keyRune, uint32_t modifiers);
 extern void gonotify_keyUp(uint16_t keyCode, uint32_t keyRune, uint32_t modifiers);

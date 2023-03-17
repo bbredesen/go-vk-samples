@@ -35,7 +35,11 @@ void* initCocoaWindow(int width, int height, int left, int top) {
 
     id window = [[[NSWindow alloc] 
             initWithContentRect:contentRect
-            styleMask: NSWindowStyleMaskTitled|NSWindowStyleMaskClosable|NSWindowStyleMaskMiniaturizable
+            styleMask: 
+                NSWindowStyleMaskTitled|
+                NSWindowStyleMaskClosable|
+                NSWindowStyleMaskMiniaturizable|
+                NSWindowStyleMaskResizable
             backing:NSBackingStoreBuffered 
             defer:NO]
         autorelease];
