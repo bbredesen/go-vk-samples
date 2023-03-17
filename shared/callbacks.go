@@ -25,31 +25,56 @@ func gonotify_windowWillClose(handle uintptr) {
 }
 
 //export gonotify_keyDown
-func gonotify_keyDown(keyCode uint16) {
-	// fmt.Println("key down, code:", keyCode)
+func gonotify_keyDown(keyCode uint16, keyRune uint32, modifiers uint32) {
+	msg := EventMessage{
+		Type: ET_Key_Down,
+		KeyEvent: &KeyEvent{
+			KeyCode:   keyCode,
+			Rune:      rune(keyRune),
+			Modifiers: KeyModBitFlags(modifiers),
+		},
+	}
+	globalChannel <- msg
+}
+
+//export gonotify_keyUp
+func gonotify_keyUp(keyCode uint16, keyRune uint32, modifiers uint32) {
+	msg := EventMessage{
+		Type: ET_Key_Up,
+		KeyEvent: &KeyEvent{
+			KeyCode:   keyCode,
+			Rune:      rune(keyRune),
+			Modifiers: KeyModBitFlags(modifiers),
+		},
+	}
+	globalChannel <- msg
 }
 
 //export gonotify_mouseDown
-func gonotify_mouseDown(button uint8, locationX, locationY uint16) {
+func gonotify_mouseDown(button uint8, locationX, locationY uint16, modifiers uint32) {
 	// fmt.Println("Button", button, "at", locationX, locationY)
 	msg := EventMessage{
 		Type: ET_Mouse_ButtonDown,
-		MouseEvent: &MouseEvent{TriggerButtonMask: button,
-			LocationX: uint16(locationX),
-			LocationY: uint16(locationY),
+		MouseEvent: &MouseEvent{
+			TriggerButtonMask: button,
+			LocationX:         uint16(locationX),
+			LocationY:         uint16(locationY),
+			Modifiers:         KeyModBitFlags(modifiers),
 		},
 	}
 	globalChannel <- msg
 }
 
 //export gonotify_mouseUp
-func gonotify_mouseUp(button uint8, locationX, locationY uint16) {
+func gonotify_mouseUp(button uint8, locationX, locationY uint16, modifiers uint32) {
 	// fmt.Println("Button", button, "at", locationX, locationY)
 	msg := EventMessage{
 		Type: ET_Mouse_ButtonUp,
-		MouseEvent: &MouseEvent{TriggerButtonMask: button,
-			LocationX: uint16(locationX),
-			LocationY: uint16(locationY),
+		MouseEvent: &MouseEvent{
+			TriggerButtonMask: button,
+			LocationX:         uint16(locationX),
+			LocationY:         uint16(locationY),
+			Modifiers:         KeyModBitFlags(modifiers),
 		},
 	}
 	globalChannel <- msg

@@ -36,16 +36,51 @@ type EventMessage struct {
 	Type EventType
 
 	*MouseEvent
-	// *KeyEvent
+	*KeyEvent
 	*SystemEvent
 }
 
 type MouseEvent struct {
 	TriggerButtonMask    uint8  // Only one bit will be set, and only for ButtonDown, ButtonUp, and Click events
-	ButtonsMask          uint8  // Potentially multiple bits will be set, showing the state of all buttons at the time of this event
+	ButtonsMask          uint8  // NOT CURRENTLY HANDLED. Potentially multiple bits will be set, showing the state of all buttons at the time of this event
 	LocationX, LocationY uint16 // Event location in the window active area. (0,0) is [system dependent? Always lower left?]
+	Modifiers            KeyModBitFlags
 }
 
+type KeyEvent struct {
+	KeyCode uint16
+	// Rune is the UTF-8 rune that the OS interprets this keypress as. It can be different from the key code
+	// e.g. if shift is pressed, if the user has a key mapping configured, or if a combination of keys results
+	// in a (non-ascii) unicode rune according to the operating system.
+	Rune      rune
+	Modifiers KeyModBitFlags
+}
+
+type KeyModBitFlags uint32
+
+const (
+	KeyModNone KeyModBitFlags = 0
+
+	// These are intentionally not using iota for the bitshift.
+	// These values are manually dupliated in go_bridge.h
+
+	KeyModLeftShift  KeyModBitFlags = 1 << 1
+	KeyModRightShift KeyModBitFlags = 1 << 2
+	KeyModLeftCtrl   KeyModBitFlags = 1 << 3
+	KeyModRightCtrl  KeyModBitFlags = 1 << 4
+	KeyModLeftAlt    KeyModBitFlags = 1 << 5 // LeftAlt is the same as left option on Mac keyboard
+	KeyModRightAlt   KeyModBitFlags = 1 << 6 // RightAlt is the same as right option on Mac keyboard
+	KeyModLeftMeta   KeyModBitFlags = 1 << 7 // LeftMeta is the left command key on Mac and the left Windows key on win32
+	KeyModRightMeta  KeyModBitFlags = 1 << 8 // RightMeta is the right command key on Mac and the right Windows key on win32
+
+	//export KeyModAnyShift
+	KeyModAnyShift KeyModBitFlags = KeyModLeftShift | KeyModRightShift
+	KeyModAnyCtrl  KeyModBitFlags = KeyModLeftCtrl | KeyModRightCtrl
+	KeyModAnyAlt   KeyModBitFlags = KeyModLeftAlt | KeyModRightAlt
+	KeyModAnyMeta  KeyModBitFlags = KeyModLeftMeta | KeyModRightMeta
+)
+
+// SystemEvent todo...window handle, process handle, others?
 type SystemEvent struct {
 	HandleForSurface uintptr
 }
