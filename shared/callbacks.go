@@ -8,7 +8,7 @@ import "C"
 //export gonotify_windowCreated
 func gonotify_windowCreated(handle uintptr) {
 	globalChannel <- EventMessage{
-		Type: ET_Sys_Create,
+		Type: ET_Sys_Created,
 		SystemEvent: &SystemEvent{
 			HandleForSurface: handle,
 		},
@@ -19,7 +19,7 @@ func gonotify_windowCreated(handle uintptr) {
 func gonotify_windowWillClose(handle uintptr) {
 	// fmt.Println("window will close notification received")
 	globalChannel <- EventMessage{
-		Type: ET_Sys_Close,
+		Type: ET_Sys_Closed,
 	}
 	close(globalChannel)
 }

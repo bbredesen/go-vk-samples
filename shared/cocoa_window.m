@@ -20,8 +20,13 @@ void* initCocoaWindow() {
 
     id appMenu = [[NSMenu new] autorelease];
     id quitTitle = [@"Quit " stringByAppendingString:appName];
-    id quitMenuItem = [[[NSMenuItem alloc] initWithTitle:quitTitle
-        action:@selector(terminate:) keyEquivalent:@"q"] autorelease];
+    id quitMenuItem = [[[NSMenuItem alloc] 
+            initWithTitle:quitTitle
+            action:@selector(performClose:) 
+            // action:@selector(terminate:) 
+            keyEquivalent:@"q"] 
+        autorelease];
+
     [appMenu addItem:quitMenuItem];
     
     [appMenuItem setSubmenu:appMenu];

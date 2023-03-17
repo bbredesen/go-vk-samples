@@ -95,7 +95,7 @@ func NewApp() App_04 {
 func (app *App_04) MainLoop(ch <-chan shared.EventMessage) {
 
 	m := <-ch
-	if m.Type != shared.ET_Sys_Create {
+	if m.Type != shared.ET_Sys_Created {
 		panic("expected ET_Sys_Create to start mainloop")
 	}
 	app.InitVulkan()

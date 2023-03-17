@@ -74,7 +74,7 @@ func (app *App_02) MainLoop(ch <-chan shared.EventMessage) {
 		// Read any system messages...input, resize, window close, etc.
 		for m, open := <-ch; open; m, open = <-ch {
 			switch m.Type {
-			case shared.ET_Sys_Create:
+			case shared.ET_Sys_Created:
 				app.InitVulkan()
 			}
 		}

@@ -16,11 +16,13 @@ const (
 	ET_Key_Up
 	ET_Key_Repeat
 
-	ET_Sys_Create
+	// Sent when the window has been created, but not neccesarily visible. Guaranteed to be the first message sent.
+	ET_Sys_Created
+	// Sent when the window has closed. Guaranteed to be the last event sent.
+	ET_Sys_Closed
 	ET_Sys_Minimize
 	ET_Sys_UnMinimize
 	ET_Sys_Maximize
-	ET_Sys_Close
 	ET_Sys_LostFocus
 	ET_Sys_RecieveFocus
 	ET_Sys_ResizeStart
