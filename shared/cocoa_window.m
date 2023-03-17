@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-void* initCocoaWindow() {
+void* initCocoaWindow(int width, int height, int left, int top) {
     [NSAutoreleasePool new];
     [NSApplication sharedApplication];
 
@@ -31,7 +31,7 @@ void* initCocoaWindow() {
     
     [appMenuItem setSubmenu:appMenu];
 
-    NSRect contentRect = NSMakeRect(0, 0, 640, 480);
+    NSRect contentRect = NSMakeRect(0, 0, width, height);
 
     id window = [[[NSWindow alloc] 
             initWithContentRect:contentRect
@@ -47,7 +47,12 @@ void* initCocoaWindow() {
     GVKView *view = [[GVKView alloc] initWithFrame:contentRect];
     [window setContentView:view];
 
-    [window cascadeTopLeftFromPoint:NSMakePoint(20,20)];
+    if (left < 0 || top < 0) {
+        [window cascadeTopLeftFromPoint:NSMakePoint(20, 20)];
+    } else {
+        [window cascadeTopLeftFromPoint:NSMakePoint(left, top)];
+    }
+
     [window setTitle:appName];
     [window makeKeyAndOrderFront:nil];
     [NSApp activateIgnoringOtherApps:YES];

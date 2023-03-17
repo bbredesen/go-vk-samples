@@ -15,13 +15,20 @@ import (
 )
 
 func NewApp() (App, error) {
-	app := &darwinApp{}
+	app := &darwinApp{
+		reqWidth:  -1,
+		reqHeight: -1,
+		reqLeft:   -1,
+		reqTop:    -1,
+	}
 
 	return app, nil
 }
 
 type darwinApp struct {
 	sharedApp
+
+	reqWidth, reqHeight, reqLeft, reqTop int
 
 	caLayer unsafe.Pointer
 }
@@ -30,7 +37,11 @@ type darwinApp struct {
 // is closed.  You should start a goroutine to read the message channel provided
 // by this App. That channel will be closed after the window is closed.
 func (app *darwinApp) Run() error {
-	app.caLayer = C.initCocoaWindow()
+	if app.reqWidth < 0 || app.reqHeight < 0 {
+		app.reqWidth = 600
+		app.reqHeight = 480
+	}
+	app.caLayer = C.initCocoaWindow(C.int(app.reqWidth), C.int(app.reqHeight), C.int(app.reqLeft), C.int(app.reqTop))
 
 	C.runCocoaWindow()
 	return nil
@@ -56,4 +67,11 @@ func (app *darwinApp) DelegateCreateSurface(instance vk.Instance) vk.SurfaceKHR 
 	} else {
 		return surface
 	}
+}
+
+func (app *darwinApp) SetWindowParams(width, height, left, top int) {
+	app.reqWidth = width
+	app.reqHeight = height
+	app.reqLeft = left
+	app.reqTop = top
 }
