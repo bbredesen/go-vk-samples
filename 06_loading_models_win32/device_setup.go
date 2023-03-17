@@ -4,18 +4,17 @@ import (
 	"fmt"
 
 	"github.com/bbredesen/go-vk"
-	"golang.org/x/sys/windows"
 )
 
 func (app *App_06) createInstance() {
 	appInfo := vk.ApplicationInfo{
-		PApplicationName:   "02_vertex_buffers",
+		PApplicationName:   "06_loading_models",
 		ApplicationVersion: vk.MAKE_VERSION(1, 0, 0),
 		EngineVersion:      vk.MAKE_VERSION(1, 0, 0),
 		ApiVersion:         vk.MAKE_VERSION(1, 2, 0),
 	}
 
-	app.enableApiLayers = append(app.enableApiLayers, "VK_LAYER_KHRONOS_validation")
+	// app.enableApiLayers = append(app.enableApiLayers, "VK_LAYER_KHRONOS_validation")
 
 	icInfo := vk.InstanceCreateInfo{
 		PApplicationInfo:        &appInfo,
@@ -33,17 +32,7 @@ func (app *App_06) createInstance() {
 }
 
 func (app *App_06) createSurface() {
-	ci := vk.Win32SurfaceCreateInfoKHR{
-		Hinstance: windows.Handle(app.Win32App.HInstance),
-		Hwnd:      windows.HWND(app.Win32App.HWnd),
-	}
-
-	var r vk.Result
-	r, app.surface = vk.CreateWin32SurfaceKHR(app.instance, &ci, nil)
-	if r != vk.SUCCESS {
-		fmt.Printf("Could not create surface!\n")
-		panic(r)
-	}
+	app.surface = app.DelegateCreateSurface(app.instance)
 }
 
 func (app *App_06) selectPhysicalDevice() {

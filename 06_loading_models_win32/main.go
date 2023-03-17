@@ -6,8 +6,8 @@ import (
 	"github.com/bbredesen/go-vk"
 )
 
-//go:generate glslc.exe shaders/shader.vert -o shaders/vert.spv
-//go:generate glslc.exe shaders/shader.frag -o shaders/frag.spv
+//go:generate glslc shaders/shader.vert -o shaders/vert.spv
+//go:generate glslc shaders/shader.frag -o shaders/frag.spv
 
 // This demonstration app is based on the introductory app at https://vulkan-tutorial.com and lines up with the "Uniform
 // Buffers" chapter
@@ -26,10 +26,8 @@ func main() {
 	app := NewApp()
 
 	// Initialize the app and open the window
-	app.Initialize("06_loading_models_win32")
+	app.Run("06_loading_models")
 
-	app.InitVulkan()
-	app.MainLoop()
 	app.CleanupVulkan()
 
 	fmt.Println()

@@ -40,17 +40,15 @@ func (app *App_06) createDescriptorSetLayout() {
 func (app *App_06) createUniformBuffers() {
 	bufferSize := vk.DeviceSize(unsafe.Sizeof(UniformBufferObject{}))
 
-	app.uboObjs = make([]UniformBufferObject, 2)
-	app.uniformBuffers = make([]vk.Buffer, 2)
-	app.uniformBufferMemories = make([]vk.DeviceMemory, 2)
-	app.uniformBufferMapped = make([]*byte, 2)
+	app.uboObjs = make([]UniformBufferObject, len(app.swapchainImages))
+	app.uniformBuffers = make([]vk.Buffer, len(app.swapchainImages))
+	app.uniformBufferMemories = make([]vk.DeviceMemory, len(app.swapchainImages))
+	app.uniformBufferMapped = make([]*byte, len(app.swapchainImages))
 
 	for i := range app.uniformBuffers {
-		eye := vkm.NewPt(2, 2, 2)
-
 		app.uboObjs[i] = UniformBufferObject{
-			view: vkm.LookAt(eye, vkm.Origin(), vkm.UnitVecZ()),
-			proj: vkm.PerspectiveDeg(60, float32(app.swapchainExtent.Width)/float32(app.swapchainExtent.Height), 0.1, 10.0),
+			view: vkm.LookAt(vkm.NewPt(2, 2, 2), vkm.Origin(), vkm.UnitVecZ()),
+			proj: vkm.PerspectiveDeg(45.0, float32(app.swapchainExtent.Width)/float32(app.swapchainExtent.Height), 0.1, 10.0),
 		}
 
 		app.uniformBuffers[i], app.uniformBufferMemories[i] = app.createBuffer(vk.BUFFER_USAGE_UNIFORM_BUFFER_BIT, bufferSize, vk.MEMORY_PROPERTY_HOST_VISIBLE_BIT|vk.MEMORY_PROPERTY_HOST_COHERENT_BIT)
@@ -78,15 +76,15 @@ func (app *App_06) cleanupUniformBuffers() {
 func (app *App_06) createDescriptorPool() {
 	uboPoolSize := vk.DescriptorPoolSize{
 		Typ:             vk.DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-		DescriptorCount: 2,
+		DescriptorCount: uint32(len(app.swapchainImages)),
 	}
 	samplerPoolSize := vk.DescriptorPoolSize{
 		Typ:             vk.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-		DescriptorCount: 2,
+		DescriptorCount: uint32(len(app.swapchainImages)),
 	}
 
 	poolCI := vk.DescriptorPoolCreateInfo{
-		MaxSets:    4,
+		MaxSets:    uint32(len(app.swapchainImages)),
 		PPoolSizes: []vk.DescriptorPoolSize{uboPoolSize, samplerPoolSize},
 	}
 
@@ -97,11 +95,13 @@ func (app *App_06) createDescriptorPool() {
 }
 
 func (app *App_06) createDescriptorSets() {
-
 	allocInfo := vk.DescriptorSetAllocateInfo{
 		DescriptorPool: app.descriptorPool,
 
-		PSetLayouts: []vk.DescriptorSetLayout{app.descriptorSetLayout, app.descriptorSetLayout},
+		PSetLayouts: make([]vk.DescriptorSetLayout, len(app.swapchainImages)),
+	}
+	for i := range allocInfo.PSetLayouts {
+		allocInfo.PSetLayouts[i] = app.descriptorSetLayout
 	}
 
 	var r vk.Result
