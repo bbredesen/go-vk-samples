@@ -26,22 +26,23 @@ func (app *App_01) createSwapchain() {
 	*/
 
 	// 1) General capabilities
-	r, surfaceCapabilities := vk.GetPhysicalDeviceSurfaceCapabilitiesKHR(app.physicalDevice, app.surface)
-	if r != vk.SUCCESS {
+	var err error
+	surfaceCapabilities, err := vk.GetPhysicalDeviceSurfaceCapabilitiesKHR(app.physicalDevice, app.surface)
+	if err != nil {
 		panic("Could not get device surface capabilities: ")
 	}
 
 	// 2) Image formats
-	r, surfaceFormats := vk.GetPhysicalDeviceSurfaceFormatsKHR(
+	surfaceFormats, err := vk.GetPhysicalDeviceSurfaceFormatsKHR(
 		app.physicalDevice, app.surface,
 	)
-	if r != vk.SUCCESS {
+	if err != nil {
 		panic("Could not get device surface formats: ")
 	}
 
 	// 3) Supported present modes
-	r, presentModes := vk.GetPhysicalDeviceSurfacePresentModesKHR(app.physicalDevice, app.surface)
-	if r != vk.SUCCESS {
+	presentModes, err := vk.GetPhysicalDeviceSurfacePresentModesKHR(app.physicalDevice, app.surface)
+	if err != nil {
 		panic("Could not get device surface present modes: ")
 	}
 
@@ -138,20 +139,20 @@ func (app *App_01) createSwapchain() {
 		Clipped:          true,
 	}
 
-	r, swapchain := vk.CreateSwapchainKHR(app.device, &createInfo, nil)
-	if r != vk.SUCCESS {
+	swapchain, err := vk.CreateSwapchainKHR(app.device, &createInfo, nil)
+	if err != nil {
 		fmt.Printf("Failed to create swapchain!")
-		panic(r)
+		panic(err)
 	}
 	app.swapchain = swapchain
 	app.swapchainImageFormat = selectedSurfaceFormat.Format
 	app.swapchainExtent = selectedExtent
 
 	// 10) Finally, get the swapchain images and save them
-	r, images := vk.GetSwapchainImagesKHR(app.device, app.swapchain)
-	if r != vk.SUCCESS {
+	images, err := vk.GetSwapchainImagesKHR(app.device, app.swapchain)
+	if err != nil {
 		fmt.Printf("Could not get images after createing swapchain!\n")
-		panic(r)
+		panic(err)
 	}
 	app.swapchainImages = images
 
@@ -181,8 +182,8 @@ func (app *App_01) createImageViews() {
 			},
 		}
 
-		if r, iv := vk.CreateImageView(app.device, &ivCI, nil); r != vk.SUCCESS {
-			panic(r)
+		if iv, err := vk.CreateImageView(app.device, &ivCI, nil); err != nil {
+			panic(err)
 		} else {
 			app.swapchainImageViews[i] = iv
 		}
@@ -208,8 +209,8 @@ func (app *App_01) cleanupSwapchain() {
 }
 
 func (app *App_01) recreateSwapchain() {
-	if r := vk.DeviceWaitIdle(app.device); r != vk.SUCCESS {
-		panic(r)
+	if err := vk.DeviceWaitIdle(app.device); err != nil {
+		panic(err)
 	}
 
 	app.cleanupSwapchain()

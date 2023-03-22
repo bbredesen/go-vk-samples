@@ -12,8 +12,8 @@ func (app *App_01) createCommandPool() {
 		Flags:            vk.COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
 		QueueFamilyIndex: app.presentQueueFamilyIndex,
 	}
-	r, commandPool := vk.CreateCommandPool(app.device, &poolCreateInfo, nil)
-	if r != vk.SUCCESS {
+	commandPool, err := vk.CreateCommandPool(app.device, &poolCreateInfo, nil)
+	if err != nil {
 		panic("Could not create command pool! ")
 	}
 	app.commandPool = commandPool
@@ -24,8 +24,8 @@ func (app *App_01) createCommandPool() {
 		Level:              vk.COMMAND_BUFFER_LEVEL_PRIMARY,
 		CommandBufferCount: uint32(len(app.swapchainImages)),
 	}
-	r, commandBuffers := vk.AllocateCommandBuffers(app.device, &allocInfo)
-	if r != vk.SUCCESS {
+	commandBuffers, err := vk.AllocateCommandBuffers(app.device, &allocInfo)
+	if err != nil {
 		panic("Could not allocate command buffers! ")
 	}
 	app.commandBuffers = commandBuffers
@@ -39,14 +39,14 @@ func (app *App_01) destroyCommandPool() {
 func (app *App_01) createSyncObjects() {
 	createInfo := vk.SemaphoreCreateInfo{}
 
-	r, imgSem := vk.CreateSemaphore(app.device, &createInfo, nil)
-	if r != vk.SUCCESS {
+	imgSem, err := vk.CreateSemaphore(app.device, &createInfo, nil)
+	if err != nil {
 		panic("Could not create semaphore! ")
 	}
 	app.imageAvailableSemaphore = imgSem
 
-	r, renSem := vk.CreateSemaphore(app.device, &createInfo, nil)
-	if r != vk.SUCCESS {
+	renSem, err := vk.CreateSemaphore(app.device, &createInfo, nil)
+	if err != nil {
 		panic("Could not create semaphore! ")
 	}
 	app.renderFinishedSemaphore = renSem
@@ -54,7 +54,7 @@ func (app *App_01) createSyncObjects() {
 	fenceCreateInfo := vk.FenceCreateInfo{
 		Flags: vk.FENCE_CREATE_SIGNALED_BIT,
 	}
-	if r, app.inFlightFence = vk.CreateFence(app.device, &fenceCreateInfo, nil); r != vk.SUCCESS {
+	if app.inFlightFence, err = vk.CreateFence(app.device, &fenceCreateInfo, nil); err != nil {
 		panic("Could not create fence! ")
 	}
 }

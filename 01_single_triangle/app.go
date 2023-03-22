@@ -56,7 +56,6 @@ type App_01 struct {
 func NewApp() *App_01 {
 	app := &App_01{
 		enableInstanceExtensions: []string{
-			"VK_KHR_surface", "VK_EXT_metal_surface",
 			"VK_EXT_debug_report",
 			"VK_EXT_debug_utils",
 		},
@@ -64,7 +63,12 @@ func NewApp() *App_01 {
 		enableApiLayers:        []string{},
 	}
 
-	app.App, _ = shared.NewApp()
+	var err error
+	if app.App, err = shared.NewApp(); err != nil {
+		panic(err)
+	}
+
+	app.enableInstanceExtensions = append(app.enableInstanceExtensions, app.App.GetRequiredInstanceExtensions()...)
 
 	return app
 }
@@ -77,6 +81,8 @@ func (app *App_01) MainLoop(ch <-chan shared.EventMessage) {
 		case shared.ET_Sys_Created:
 			app.windowHandle = m.HandleForSurface
 			app.InitVulkan()
+		case shared.ET_Sys_Closed:
+			return
 		}
 		// Rendering goes here
 		app.drawFrame()
@@ -85,10 +91,11 @@ func (app *App_01) MainLoop(ch <-chan shared.EventMessage) {
 }
 
 func (app *App_01) Run(windowTitle string) {
-
 	go app.MainLoop(app.App.GetEventChannel())
 
-	app.App.Run()
+	if err := app.App.Run(); err != nil {
+		panic(err)
+	}
 
 }
 
@@ -130,9 +137,9 @@ func (app *App_01) CleanupVulkan() {
 func (app *App_01) drawFrame() {
 	vk.WaitForFences(app.device, []vk.Fence{app.inFlightFence}, true, ^uint64(0))
 
-	r, imageIndex := vk.AcquireNextImageKHR(app.device, app.swapchain, ^uint64(0), app.imageAvailableSemaphore, vk.Fence(vk.NULL_HANDLE))
-	if r != vk.SUCCESS {
-		if r == vk.SUBOPTIMAL_KHR || r == vk.ERROR_OUT_OF_DATE_KHR {
+	imageIndex, err := vk.AcquireNextImageKHR(app.device, app.swapchain, ^uint64(0), app.imageAvailableSemaphore, vk.Fence(vk.NULL_HANDLE))
+	if err != nil {
+		if err == vk.SUBOPTIMAL_KHR || err == vk.ERROR_OUT_OF_DATE_KHR {
 			app.recreateSwapchain()
 			return
 		} else {
