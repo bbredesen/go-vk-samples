@@ -1,7 +1,7 @@
 package shared
 
 /*
-#include "go_bridge.h"
+#include "delegate/go_bridge.h"
 */
 import "C"
 

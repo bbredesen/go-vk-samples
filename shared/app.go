@@ -23,11 +23,30 @@ type App interface {
 
 	GetRequiredInstanceExtensions() []string
 
-	DelegateCreateSurface(instance vk.Instance) vk.SurfaceKHR
+	DelegateCreateSurface(instance vk.Instance) (vk.SurfaceKHR, error)
 }
 
-type sharedApp struct{}
+type sharedApp struct {
+	reqWidth, reqHeight, reqLeft, reqTop int
+}
+
+func newSharedApp() sharedApp {
+	return sharedApp{
+		reqWidth:  -1,
+		reqHeight: -1,
+		reqLeft:   -1,
+		reqTop:    -1,
+	}
+
+}
 
 func (app *sharedApp) GetEventChannel() <-chan EventMessage {
 	return globalChannel
+}
+
+func (app *sharedApp) SetWindowParams(width, height, left, top int) {
+	app.reqWidth = width
+	app.reqHeight = height
+	app.reqLeft = left
+	app.reqTop = top
 }

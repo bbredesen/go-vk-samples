@@ -8,6 +8,15 @@ void* initCocoaWindow(int width, int height, int left, int top);
 void runCocoaWindow();
 #endif
 
+#if defined(_WIN32)
+
+#include <Windows.h>
+
+HWND initWin32Window(int width, int height, int left, int top);
+void runWin32Window(HWND hWnd);
+
+#endif
+
 extern void gonotify_windowCreated(uintptr_t handle);
 extern void gonotify_windowWillClose(uintptr_t handle);
 extern void gonotify_keyDown(uint16_t keyCode);

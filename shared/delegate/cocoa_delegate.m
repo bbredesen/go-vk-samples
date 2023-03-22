@@ -1,3 +1,5 @@
+#if defined(__APPLE__) && defined(__MACH__)
+
 #import "cocoa_window.h"
 #include <objc/objc.h>
 #import "go_bridge.h"
@@ -56,3 +58,5 @@
 
 
 @end
+
+#endif

@@ -1,3 +1,5 @@
+#if defined(__APPLE__) && defined(__MACH__)
+
 #import "cocoa_window.h"
 #import "go_bridge.h"
 
@@ -65,3 +67,5 @@ void* initCocoaWindow(int width, int height, int left, int top) {
 void runCocoaWindow() {
     [NSApp run];
 }
+
+#endif
