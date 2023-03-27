@@ -26,10 +26,10 @@ func (app *App_06) createBuffer(usage vk.BufferUsageFlags, size vk.DeviceSize, f
 		SharingMode: vk.SHARING_MODE_EXCLUSIVE,
 	}
 
-	var r vk.Result
+	var err error
 
-	if r, buffer = vk.CreateBuffer(app.device, &bufferCI, nil); r != vk.SUCCESS {
-		panic("Could not create buffer: " + r.String())
+	if buffer, err = vk.CreateBuffer(app.device, &bufferCI, nil); err != nil {
+		panic("Could not create buffer: " + err.Error())
 	}
 
 	memReq := vk.GetBufferMemoryRequirements(app.device, buffer)
@@ -45,11 +45,11 @@ func (app *App_06) createBuffer(usage vk.BufferUsageFlags, size vk.DeviceSize, f
 		MemoryTypeIndex: app.findMemoryType(memReq.MemoryTypeBits, fl), //vk.MEMORY_PROPERTY_HOST_VISIBLE_BIT|vk.MEMORY_PROPERTY_HOST_COHERENT_BIT)),
 	}
 
-	if r, memory = vk.AllocateMemory(app.device, &memAllocInfo, nil); r != vk.SUCCESS {
-		panic("Could not allocate memory for buffer: " + r.String())
+	if memory, err = vk.AllocateMemory(app.device, &memAllocInfo, nil); err != nil {
+		panic("Could not allocate memory for buffer: " + err.Error())
 	}
-	if r := vk.BindBufferMemory(app.device, buffer, memory, 0); r != vk.SUCCESS {
-		panic("Could not bind memory for buffer: " + r.String())
+	if err := vk.BindBufferMemory(app.device, buffer, memory, 0); err != nil {
+		panic("Could not bind memory for buffer: " + err.Error())
 	}
 
 	return

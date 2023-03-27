@@ -22,23 +22,27 @@ func (app *App_05) createInstance() {
 		PpEnabledLayerNames:     app.enableApiLayers,
 	}
 
-	var r vk.Result
-	r, app.instance = vk.CreateInstance(&icInfo, nil)
+	var err error
+	app.instance, err = vk.CreateInstance(&icInfo, nil)
 
-	if r != vk.SUCCESS {
+	if err != nil {
 		fmt.Println("Could not create instance!")
-		panic(r.String())
+		panic(err.Error())
 	}
 }
 
 func (app *App_05) createSurface() {
-	app.surface = app.DelegateCreateSurface(app.instance)
+	var err error
+	app.surface, err = app.DelegateCreateSurface(app.instance)
+	if err != nil {
+		panic("Could not create surface: " + err.Error())
+	}
 }
 
 func (app *App_05) selectPhysicalDevice() {
-	r, devices := vk.EnumeratePhysicalDevices(app.instance)
-	if r != vk.SUCCESS {
-		panic("Could not enumerate physical devices: " + r.String())
+	devices, err := vk.EnumeratePhysicalDevices(app.instance)
+	if err != nil {
+		panic("Could not enumerate physical devices: " + err.Error())
 	}
 
 	for _, dev := range devices {
@@ -80,9 +84,9 @@ func (app *App_05) isDeviceSuitable(device vk.PhysicalDevice) bool {
 }
 
 func (app *App_05) checkDeviceExtensionSupport(device vk.PhysicalDevice) bool {
-	r, devExtensions := vk.EnumerateDeviceExtensionProperties(device, "")
-	if r != vk.SUCCESS {
-		panic(r.String() + ": Could not enumerate device extension properties!")
+	devExtensions, err := vk.EnumerateDeviceExtensionProperties(device, "")
+	if err != nil {
+		panic(err.Error() + ": Could not enumerate device extension properties!")
 	}
 
 	foundProps := make(map[string]bool, len(app.enableDeviceExtensions))
@@ -114,9 +118,9 @@ func (app *App_05) analyzeQueueFamilies(device vk.PhysicalDevice) queueFamIndice
 		if (p.QueueFlags & vk.QUEUE_GRAPHICS_BIT) != 0 {
 			inds.graphicsIndex.Set(uint32(i))
 		}
-		r, surf := vk.GetPhysicalDeviceSurfaceSupportKHR(device, uint32(i), app.surface)
-		if r != vk.SUCCESS {
-			panic(r)
+		surf, err := vk.GetPhysicalDeviceSurfaceSupportKHR(device, uint32(i), app.surface)
+		if err != nil {
+			panic(err)
 		}
 
 		if surf {
@@ -169,11 +173,11 @@ func (app *App_05) createLogicalDevice() {
 		// EnabledLayerNames:     (deprecated)
 	}
 
-	r, device := vk.CreateDevice(app.physicalDevice, &createInfo, nil)
+	device, err := vk.CreateDevice(app.physicalDevice, &createInfo, nil)
 
-	if r != vk.SUCCESS {
-		fmt.Printf("Logical device creation failed! (%s)\n", r.String())
-		panic(r)
+	if err != nil {
+		fmt.Printf("Logical device creation failed! (%s)\n", err.Error())
+		panic(err)
 	}
 	app.device = device
 

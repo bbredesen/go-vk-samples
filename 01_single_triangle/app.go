@@ -159,7 +159,7 @@ func (app *App_01) drawFrame() {
 		PSignalSemaphores: []vk.Semaphore{app.renderFinishedSemaphore},
 	}
 
-	if r := vk.QueueSubmit(app.graphicsQueue, []vk.SubmitInfo{submitInfo}, app.inFlightFence); r != vk.SUCCESS {
+	if err := vk.QueueSubmit(app.graphicsQueue, []vk.SubmitInfo{submitInfo}, app.inFlightFence); err != nil {
 		panic("Could not submit to graphics queue! ")
 	}
 
@@ -170,8 +170,8 @@ func (app *App_01) drawFrame() {
 		PImageIndices:   []uint32{imageIndex},
 	}
 
-	if r := vk.QueuePresentKHR(app.presentQueue, &presentInfo); r != vk.SUCCESS && r != vk.SUBOPTIMAL_KHR && r != vk.ERROR_OUT_OF_DATE_KHR {
-		panic("Could not submit to presentation queue! ")
+	if err := vk.QueuePresentKHR(app.presentQueue, &presentInfo); err != nil && err != vk.SUBOPTIMAL_KHR && err != vk.ERROR_OUT_OF_DATE_KHR {
+		panic("Could not submit to presentation queue! " + err.Error())
 	}
 
 }

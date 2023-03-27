@@ -36,10 +36,10 @@ func main() {
 		PApplicationInfo: &appInfo,
 	}
 
-	// var r vk.Result
+	// var err error
 	var instance vk.Instance
 
-	if instance, err = vk.CreateInstance(&ci, nil); err != vk.SUCCESS {
+	if instance, err = vk.CreateInstance(&ci, nil); err != nil {
 		panic("Failed to create an instance, error code was " + err.Error())
 	}
 	fmt.Printf("Instance created, handle value is 0x%x\n", instance)

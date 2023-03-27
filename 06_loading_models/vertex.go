@@ -57,9 +57,9 @@ func (app *App_06) createVertexBuffer() {
 	size := vk.DeviceSize(8*unsafe.Sizeof(float32(0))) * vk.DeviceSize(len(obj.Coord))
 
 	stagingBuffer, stagingBufferMemory := app.createBuffer(vk.BUFFER_USAGE_TRANSFER_SRC_BIT, size, vk.MEMORY_PROPERTY_HOST_VISIBLE_BIT|vk.MEMORY_PROPERTY_HOST_COHERENT_BIT)
-	r, ptr := vk.MapMemory(app.device, stagingBufferMemory, 0, size, 0)
-	if r != vk.SUCCESS {
-		panic("Could not map memory for vertex buffer: " + r.String())
+	ptr, err := vk.MapMemory(app.device, stagingBufferMemory, 0, size, 0)
+	if err != nil {
+		panic("Could not map memory for vertex buffer: " + err.Error())
 	}
 
 	vk.MemCopySlice(unsafe.Pointer(ptr), obj.Coord)
@@ -80,9 +80,9 @@ func (app *App_06) createIndexBuffer() {
 	size := vk.DeviceSize(unsafe.Sizeof(indices[0])) * vk.DeviceSize(len(indices))
 
 	stagingBuffer, stagingBufferMemory := app.createBuffer(vk.BUFFER_USAGE_TRANSFER_SRC_BIT, size, vk.MEMORY_PROPERTY_HOST_VISIBLE_BIT|vk.MEMORY_PROPERTY_HOST_COHERENT_BIT)
-	r, ptr := vk.MapMemory(app.device, stagingBufferMemory, 0, size, 0)
-	if r != vk.SUCCESS {
-		panic("Could not map memory for vertex buffer: " + r.String())
+	ptr, err := vk.MapMemory(app.device, stagingBufferMemory, 0, size, 0)
+	if err != nil {
+		panic("Could not map memory for vertex buffer: " + err.Error())
 	}
 
 	vk.MemCopySlice(unsafe.Pointer(ptr), indices)

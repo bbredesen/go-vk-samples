@@ -40,8 +40,8 @@ func (app *App_01) createSurface() {
 
 func (app *App_01) selectPhysicalDevice() {
 	devices, err := vk.EnumeratePhysicalDevices(app.instance)
-	if err != vk.SUCCESS {
-		panic("Could not enumerate physical devices: ")
+	if err != nil {
+		panic("Could not enumerate physical devices: " + err.Error())
 	}
 
 	for _, dev := range devices {

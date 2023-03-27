@@ -71,7 +71,7 @@ func (app *App_01) recordCommandBuffer(buffer vk.CommandBuffer, imageIndex uint3
 		Flags: vk.COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
 	}
 
-	if r := vk.BeginCommandBuffer(buffer, &cbBeginInfo); r != vk.SUCCESS {
+	if err := vk.BeginCommandBuffer(buffer, &cbBeginInfo); err != nil {
 		panic("Could not begin command buffer recording! ")
 	}
 
@@ -98,7 +98,7 @@ func (app *App_01) recordCommandBuffer(buffer vk.CommandBuffer, imageIndex uint3
 
 	vk.CmdEndRenderPass(buffer)
 
-	if r := vk.EndCommandBuffer(buffer); r != vk.SUCCESS {
+	if err := vk.EndCommandBuffer(buffer); err != nil {
 		panic("Could not end command buffer recording! ")
 	}
 }

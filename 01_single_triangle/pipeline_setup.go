@@ -100,7 +100,7 @@ func (app *App_01) createGraphicsPipeline() {
 	pipelineLayoutCreateInfo := vk.PipelineLayoutCreateInfo{}
 
 	p, err := vk.CreatePipelineLayout(app.device, &pipelineLayoutCreateInfo, nil)
-	if err != vk.SUCCESS {
+	if err != nil {
 		panic(err)
 	}
 	app.pipelineLayout = p
@@ -190,7 +190,7 @@ func (app *App_01) createRenderPass() {
 	}
 
 	var err error
-	if app.renderPass, err = vk.CreateRenderPass(app.device, &renderPassCreateInfo, nil); err != vk.SUCCESS {
+	if app.renderPass, err = vk.CreateRenderPass(app.device, &renderPassCreateInfo, nil); err != nil {
 		panic(err)
 	}
 }

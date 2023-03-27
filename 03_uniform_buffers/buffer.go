@@ -10,16 +10,16 @@ func (app *App_03) copyBuffer(srcBuffer, dstBuffer vk.Buffer, size vk.DeviceSize
 		Level:              vk.COMMAND_BUFFER_LEVEL_PRIMARY,
 		CommandBufferCount: 1,
 	}
-	r, bufs := vk.AllocateCommandBuffers(app.device, &cbAllocInfo)
-	if r != vk.SUCCESS {
-		panic("Could not allocate command buffer for copy operations: " + r.String())
+	bufs, err := vk.AllocateCommandBuffers(app.device, &cbAllocInfo)
+	if err != nil {
+		panic("Could not allocate command buffer for copy operations: " + err.Error())
 	}
 
 	beginInfo := vk.CommandBufferBeginInfo{
 		Flags: vk.COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
 	}
-	if r := vk.BeginCommandBuffer(bufs[0], &beginInfo); r != vk.SUCCESS {
-		panic("Could not begin command buffer for copy operations: " + r.String())
+	if err := vk.BeginCommandBuffer(bufs[0], &beginInfo); err != nil {
+		panic("Could not begin command buffer for copy operations: " + err.Error())
 	}
 
 	region := vk.BufferCopy{
@@ -49,10 +49,10 @@ func (app *App_03) createBuffer(usage vk.BufferUsageFlags, size vk.DeviceSize, m
 		SharingMode: vk.SHARING_MODE_EXCLUSIVE,
 	}
 
-	var r vk.Result
+	var err error
 
-	if r, buffer = vk.CreateBuffer(app.device, &bufferCI, nil); r != vk.SUCCESS {
-		panic("Could not create buffer: " + r.String())
+	if buffer, err = vk.CreateBuffer(app.device, &bufferCI, nil); err != nil {
+		panic("Could not create buffer: " + err.Error())
 	}
 
 	memReq := vk.GetBufferMemoryRequirements(app.device, buffer)
@@ -62,11 +62,11 @@ func (app *App_03) createBuffer(usage vk.BufferUsageFlags, size vk.DeviceSize, m
 		MemoryTypeIndex: uint32(app.findMemoryType(memReq.MemoryTypeBits, memProps)), //vk.MEMORY_PROPERTY_HOST_VISIBLE_BIT|vk.MEMORY_PROPERTY_HOST_COHERENT_BIT)),
 	}
 
-	if r, memory = vk.AllocateMemory(app.device, &memAllocInfo, nil); r != vk.SUCCESS {
-		panic("Could not allocate memory for buffer: " + r.String())
+	if memory, err = vk.AllocateMemory(app.device, &memAllocInfo, nil); err != nil {
+		panic("Could not allocate memory for buffer: " + err.Error())
 	}
-	if r := vk.BindBufferMemory(app.device, buffer, memory, 0); r != vk.SUCCESS {
-		panic("Could not bind memory for buffer: " + r.String())
+	if err := vk.BindBufferMemory(app.device, buffer, memory, 0); err != nil {
+		panic("Could not bind memory for buffer: " + err.Error())
 	}
 
 	return
