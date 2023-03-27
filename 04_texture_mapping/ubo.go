@@ -30,8 +30,8 @@ func (app *App_04) createDescriptorSetLayout() {
 		PBindings: []vk.DescriptorSetLayoutBinding{uboLayoutBinding, samplerLayoutBinding},
 	}
 
-	if r, layout := vk.CreateDescriptorSetLayout(app.device, &uboLayoutCI, nil); r != vk.SUCCESS {
-		panic("Could not create descriptor set layout: " + r.String())
+	if layout, err := vk.CreateDescriptorSetLayout(app.device, &uboLayoutCI, nil); err != nil {
+		panic("Could not create descriptor set layout: " + err.Error())
 	} else {
 		app.descriptorSetLayout = layout
 	}
@@ -53,9 +53,9 @@ func (app *App_04) createUniformBuffers() {
 
 		app.uniformBuffers[i], app.uniformBufferMemories[i] = app.createBuffer(vk.BUFFER_USAGE_UNIFORM_BUFFER_BIT, bufferSize, vk.MEMORY_PROPERTY_HOST_VISIBLE_BIT|vk.MEMORY_PROPERTY_HOST_COHERENT_BIT)
 
-		var r vk.Result
-		if r, app.uniformBufferMapped[i] = vk.MapMemory(app.device, app.uniformBufferMemories[i], 0, bufferSize, 0); r != vk.SUCCESS {
-			panic("Could not map memory for uniform buffer: " + r.String())
+		var err error
+		if app.uniformBufferMapped[i], err = vk.MapMemory(app.device, app.uniformBufferMemories[i], 0, bufferSize, 0); err != nil {
+			panic("Could not map memory for uniform buffer: " + err.Error())
 		}
 
 	}
@@ -88,9 +88,9 @@ func (app *App_04) createDescriptorPool() {
 		PPoolSizes: []vk.DescriptorPoolSize{uboPoolSize, samplerPoolSize},
 	}
 
-	var r vk.Result
-	if r, app.descriptorPool = vk.CreateDescriptorPool(app.device, &poolCI, nil); r != vk.SUCCESS {
-		panic("Could not create descriptor pool: " + r.String())
+	var err error
+	if app.descriptorPool, err = vk.CreateDescriptorPool(app.device, &poolCI, nil); err != nil {
+		panic("Could not create descriptor pool: " + err.Error())
 	}
 }
 
@@ -104,9 +104,9 @@ func (app *App_04) createDescriptorSets() {
 		allocInfo.PSetLayouts[i] = app.descriptorSetLayout
 	}
 
-	var r vk.Result
-	if r, app.descriptorSets = vk.AllocateDescriptorSets(app.device, &allocInfo); r != vk.SUCCESS {
-		panic("Could not allcoate descriptor sets: " + r.String())
+	var err error
+	if app.descriptorSets, err = vk.AllocateDescriptorSets(app.device, &allocInfo); err != nil {
+		panic("Could not allcoate descriptor sets: " + err.Error())
 	}
 
 	for i := range app.descriptorSets {

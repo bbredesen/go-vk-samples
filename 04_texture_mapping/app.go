@@ -196,13 +196,13 @@ func (app *App_04) CleanupVulkan() {
 func (app *App_04) drawFrame() {
 	vk.WaitForFences(app.device, []vk.Fence{app.inFlightFence}, true, ^uint64(0))
 
-	var r vk.Result
-	if r, app.currentImage = vk.AcquireNextImageKHR(app.device, app.swapchain, ^uint64(0), app.imageAvailableSemaphore, vk.Fence(vk.NULL_HANDLE)); r != vk.SUCCESS {
-		if r == vk.SUBOPTIMAL_KHR || r == vk.ERROR_OUT_OF_DATE_KHR {
+	var err error
+	if app.currentImage, err = vk.AcquireNextImageKHR(app.device, app.swapchain, ^uint64(0), app.imageAvailableSemaphore, vk.Fence(vk.NULL_HANDLE)); err != nil {
+		if err == vk.SUBOPTIMAL_KHR || err == vk.ERROR_OUT_OF_DATE_KHR {
 			app.recreateSwapchain()
 			return
 		} else {
-			panic("Could not acquire next image! " + r.String())
+			panic("Could not acquire next image! " + err.Error())
 		}
 	}
 
@@ -220,8 +220,8 @@ func (app *App_04) drawFrame() {
 		PSignalSemaphores: []vk.Semaphore{app.renderFinishedSemaphore},
 	}
 
-	if r := vk.QueueSubmit(app.graphicsQueue, []vk.SubmitInfo{submitInfo}, app.inFlightFence); r != vk.SUCCESS {
-		panic("Could not submit to graphics queue! " + r.String())
+	if err := vk.QueueSubmit(app.graphicsQueue, []vk.SubmitInfo{submitInfo}, app.inFlightFence); err != nil {
+		panic("Could not submit to graphics queue! " + err.Error())
 	}
 
 	// Present the drawn image
@@ -231,8 +231,8 @@ func (app *App_04) drawFrame() {
 		PImageIndices:   []uint32{app.currentImage},
 	}
 
-	if r := vk.QueuePresentKHR(app.presentQueue, &presentInfo); r != vk.SUCCESS && r != vk.SUBOPTIMAL_KHR && r != vk.ERROR_OUT_OF_DATE_KHR {
-		panic("Could not submit to presentation queue! " + r.String())
+	if err := vk.QueuePresentKHR(app.presentQueue, &presentInfo); err != nil && err != vk.SUBOPTIMAL_KHR && err != vk.ERROR_OUT_OF_DATE_KHR {
+		panic("Could not submit to presentation queue! " + err.Error())
 	}
 
 }

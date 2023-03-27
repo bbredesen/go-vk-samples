@@ -70,16 +70,19 @@ func NewApp() *App_02 {
 }
 
 func (app *App_02) MainLoop(ch <-chan shared.EventMessage) {
-	for {
-		// Read any system messages...input, resize, window close, etc.
-		for m, open := <-ch; open; m, open = <-ch {
-			switch m.Type {
-			case shared.ET_Sys_Created:
-				app.InitVulkan()
-			}
+
+	// Read any system messages...input, resize, window close, etc.
+	for m, open := <-ch; open; m, open = <-ch {
+		switch m.Type {
+		case shared.ET_Sys_Created:
+			app.windowHandle = m.HandleForSurface
+			app.InitVulkan()
+		case shared.ET_Sys_Closed:
+			return
 		}
 		// Rendering goes here
 		app.drawFrame()
+
 	}
 }
 
@@ -136,13 +139,13 @@ func (app *App_02) CleanupVulkan() {
 func (app *App_02) drawFrame() {
 	vk.WaitForFences(app.device, []vk.Fence{app.inFlightFence}, true, ^uint64(0))
 
-	r, imageIndex := vk.AcquireNextImageKHR(app.device, app.swapchain, ^uint64(0), app.imageAvailableSemaphore, vk.Fence(vk.NULL_HANDLE))
-	if r != vk.SUCCESS {
-		if r == vk.SUBOPTIMAL_KHR || r == vk.ERROR_OUT_OF_DATE_KHR {
+	imageIndex, err := vk.AcquireNextImageKHR(app.device, app.swapchain, ^uint64(0), app.imageAvailableSemaphore, vk.Fence(vk.NULL_HANDLE))
+	if err != nil {
+		if err == vk.SUBOPTIMAL_KHR || err == vk.ERROR_OUT_OF_DATE_KHR {
 			app.recreateSwapchain()
 			return
 		} else {
-			panic("Could not acquire next image! " + r.String())
+			panic("Could not acquire next image! " + err.Error())
 		}
 	}
 
@@ -158,8 +161,8 @@ func (app *App_02) drawFrame() {
 		PSignalSemaphores: []vk.Semaphore{app.renderFinishedSemaphore},
 	}
 
-	if r := vk.QueueSubmit(app.graphicsQueue, []vk.SubmitInfo{submitInfo}, app.inFlightFence); r != vk.SUCCESS {
-		panic("Could not submit to graphics queue! " + r.String())
+	if err := vk.QueueSubmit(app.graphicsQueue, []vk.SubmitInfo{submitInfo}, app.inFlightFence); err != nil {
+		panic("Could not submit to graphics queue! " + err.Error())
 	}
 
 	// Present the drawn image
@@ -169,8 +172,8 @@ func (app *App_02) drawFrame() {
 		PImageIndices:   []uint32{imageIndex},
 	}
 
-	if r := vk.QueuePresentKHR(app.presentQueue, &presentInfo); r != vk.SUCCESS && r != vk.SUBOPTIMAL_KHR && r != vk.ERROR_OUT_OF_DATE_KHR {
-		panic("Could not submit to presentation queue! " + r.String())
+	if err := vk.QueuePresentKHR(app.presentQueue, &presentInfo); err != nil && err != vk.SUBOPTIMAL_KHR && err != vk.ERROR_OUT_OF_DATE_KHR {
+		panic("Could not submit to presentation queue! " + err.Error())
 	}
 
 }

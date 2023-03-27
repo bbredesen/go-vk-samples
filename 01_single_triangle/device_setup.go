@@ -23,22 +23,25 @@ func (app *App_01) createInstance() {
 		PpEnabledLayerNames:     app.enableApiLayers,
 	}
 
-	var r vk.Result
-	r, app.instance = vk.CreateInstance(&icInfo, nil)
+	var err error
+	app.instance, err = vk.CreateInstance(&icInfo, nil)
 
-	if r != vk.SUCCESS {
+	if err != nil {
 		panic("Could not create instance!")
 	}
 }
 
 func (app *App_01) createSurface() {
-	app.surface = app.DelegateCreateSurface(app.instance) // Delegated to shared.App
+	var err error
+	if app.surface, err = app.DelegateCreateSurface(app.instance); err != nil {
+		panic(err)
+	}
 }
 
 func (app *App_01) selectPhysicalDevice() {
-	r, devices := vk.EnumeratePhysicalDevices(app.instance)
-	if r != vk.SUCCESS {
-		panic("Could not enumerate physical devices: ")
+	devices, err := vk.EnumeratePhysicalDevices(app.instance)
+	if err != nil {
+		panic("Could not enumerate physical devices: " + err.Error())
 	}
 
 	for _, dev := range devices {
@@ -77,8 +80,8 @@ func (app *App_01) isDeviceSuitable(device vk.PhysicalDevice) bool {
 }
 
 func (app *App_01) checkDeviceExtensionSupport(device vk.PhysicalDevice) bool {
-	r, devExtensions := vk.EnumerateDeviceExtensionProperties(device, "")
-	if r != vk.SUCCESS {
+	devExtensions, err := vk.EnumerateDeviceExtensionProperties(device, "")
+	if err != nil {
 		panic("Could not enumerate device extension properties!")
 	}
 
@@ -111,9 +114,9 @@ func (app *App_01) analyzeQueueFamilies(device vk.PhysicalDevice) queueFamIndice
 		if (p.QueueFlags & vk.QUEUE_GRAPHICS_BIT) != 0 {
 			inds.graphicsIndex.Set(uint32(i))
 		}
-		r, surf := vk.GetPhysicalDeviceSurfaceSupportKHR(device, uint32(i), app.surface)
-		if r != vk.SUCCESS {
-			panic(r)
+		surf, err := vk.GetPhysicalDeviceSurfaceSupportKHR(device, uint32(i), app.surface)
+		if err != nil {
+			panic(err)
 		}
 
 		if surf {
@@ -166,11 +169,11 @@ func (app *App_01) createLogicalDevice() {
 		// EnabledLayerNames:     (deprecated)
 	}
 
-	r, device := vk.CreateDevice(app.physicalDevice, &createInfo, nil)
+	device, err := vk.CreateDevice(app.physicalDevice, &createInfo, nil)
 
-	if r != vk.SUCCESS {
+	if err != nil {
 		fmt.Printf("Logical device creation failed!")
-		panic(r)
+		panic(err)
 	}
 	app.device = device
 

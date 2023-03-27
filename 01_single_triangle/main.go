@@ -25,10 +25,10 @@ func main() {
 	// defer glfw.Terminate()
 	// log.Println("glfw initialized")
 
-	fmt.Printf("Win32 Vulkan - Drawing a Triangle\n")
+	fmt.Printf("Vulkan - Drawing a Triangle\n")
 	fmt.Printf("This program demonstrates opening a window, setting up the basics for Vulkan rendering, and draws a single triangle.\n\n")
 
-	if r, ver := vk.EnumerateInstanceVersion(); r != vk.SUCCESS {
+	if ver, err := vk.EnumerateInstanceVersion(); err != nil {
 		fmt.Println("ERROR: Could not get installed Vulkan version.")
 		// ERROR_OUT_OF_HOST_MEMORY is the only error code possible, per the spec.
 	} else {
@@ -38,7 +38,7 @@ func main() {
 	app := NewApp()
 
 	// Initialize the app and open the window
-	app.Run("01_single_triangle_win32")
+	app.Run("01_single_triangle")
 
 	// app.InitVulkan()
 	// app.MainLoop()
