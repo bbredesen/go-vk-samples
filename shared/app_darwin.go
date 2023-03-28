@@ -4,7 +4,7 @@ package shared
 
 /*
 #cgo LDFLAGS: -framework Cocoa -framework QuartzCore
-#include "go_bridge.h"
+#include "delegate/go_bridge.h"
 */
 import "C"
 
@@ -17,6 +17,7 @@ import (
 func NewApp() (App, error) {
 	app := &darwinApp{
 		newSharedApp(),
+		nil,
 	}
 
 	return app, nil
