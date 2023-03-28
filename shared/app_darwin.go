@@ -3,7 +3,7 @@
 package shared
 
 /*
-#cgo LDFLAGS: -framework Cocoa -framework QuartzCore
+#cgo LDFLAGS: -framework Cocoa -framework QuartzCore -L delegate/ -ldelegate
 #include "delegate/go_bridge.h"
 */
 import "C"
