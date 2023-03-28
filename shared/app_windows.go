@@ -65,10 +65,5 @@ func (app *windowsApp) Run() error {
 
 	C.runWin32Window(C.HWND(unsafe.Pointer(app.hWnd)))
 
-	// app.caLayer = C.initCocoaWindow(C.int(app.reqWidth), C.int(app.reqHeight), C.int(app.reqLeft), C.int(app.reqTop))
-
-	// C.runCocoaWindow()
-
-	// return errors.New("not yet implemented: windows Run()")]
 	return nil
 }

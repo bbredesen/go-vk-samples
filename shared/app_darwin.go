@@ -50,18 +50,9 @@ func (app *darwinApp) GetRequiredInstanceExtensions() []string {
 }
 
 func (app *darwinApp) DelegateCreateSurface(instance vk.Instance) (vk.SurfaceKHR, error) {
-	var r vk.Result
-	var surface vk.SurfaceKHR
-
 	ci := vk.MetalSurfaceCreateInfoEXT{
 		PLayer: (*vk.CAMetalLayer)(app.caLayer),
 	}
-
-	// if r, surface = vk.CreateMetalSurfaceEXT(instance, &ci, nil); r != vk.SUCCESS {
-	// 	panic(r)
-	// } else {
-	// 	return surface
-	// }
 
 	return vk.CreateMetalSurfaceEXT(instance, &ci, nil)
 }
