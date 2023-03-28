@@ -12,9 +12,9 @@ func (app *App_02) createCommandPool() {
 		Flags:            vk.COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
 		QueueFamilyIndex: app.presentQueueFamilyIndex,
 	}
-	r, commandPool := vk.CreateCommandPool(app.device, &poolCreateInfo, nil)
-	if r != vk.SUCCESS {
-		panic("Could not create command pool! " + r.String())
+	commandPool, err := vk.CreateCommandPool(app.device, &poolCreateInfo, nil)
+	if err != nil {
+		panic("Could not create command pool! " + err.Error())
 	}
 	app.commandPool = commandPool
 
@@ -24,9 +24,9 @@ func (app *App_02) createCommandPool() {
 		Level:              vk.COMMAND_BUFFER_LEVEL_PRIMARY,
 		CommandBufferCount: uint32(len(app.swapchainImages)),
 	}
-	r, commandBuffers := vk.AllocateCommandBuffers(app.device, &allocInfo)
-	if r != vk.SUCCESS {
-		panic("Could not allocate command buffers! " + r.String())
+	commandBuffers, err := vk.AllocateCommandBuffers(app.device, &allocInfo)
+	if err != nil {
+		panic("Could not allocate command buffers! " + err.Error())
 	}
 	app.commandBuffers = commandBuffers
 }
@@ -39,23 +39,23 @@ func (app *App_02) destroyCommandPool() {
 func (app *App_02) createSyncObjects() {
 	createInfo := vk.SemaphoreCreateInfo{}
 
-	r, imgSem := vk.CreateSemaphore(app.device, &createInfo, nil)
-	if r != vk.SUCCESS {
-		panic("Could not create semaphore! " + r.String())
+	imgSem, err := vk.CreateSemaphore(app.device, &createInfo, nil)
+	if err != nil {
+		panic("Could not create semaphore! " + err.Error())
 	}
 	app.imageAvailableSemaphore = imgSem
 
-	r, renSem := vk.CreateSemaphore(app.device, &createInfo, nil)
-	if r != vk.SUCCESS {
-		panic("Could not create semaphore! " + r.String())
+	renSem, err := vk.CreateSemaphore(app.device, &createInfo, nil)
+	if err != nil {
+		panic("Could not create semaphore! " + err.Error())
 	}
 	app.renderFinishedSemaphore = renSem
 
 	fenceCreateInfo := vk.FenceCreateInfo{
 		Flags: vk.FENCE_CREATE_SIGNALED_BIT,
 	}
-	if r, app.inFlightFence = vk.CreateFence(app.device, &fenceCreateInfo, nil); r != vk.SUCCESS {
-		panic("Could not create fence! " + r.String())
+	if app.inFlightFence, err = vk.CreateFence(app.device, &fenceCreateInfo, nil); err != nil {
+		panic("Could not create fence! " + err.Error())
 	}
 }
 
@@ -71,8 +71,8 @@ func (app *App_02) recordCommandBuffer(buffer vk.CommandBuffer, imageIndex uint3
 		Flags: vk.COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
 	}
 
-	if r := vk.BeginCommandBuffer(buffer, &cbBeginInfo); r != vk.SUCCESS {
-		panic("Could not begin command buffer recording! " + r.String())
+	if err := vk.BeginCommandBuffer(buffer, &cbBeginInfo); err != nil {
+		panic("Could not begin command buffer recording! " + err.Error())
 	}
 
 	rpBeginInfo := vk.RenderPassBeginInfo{
@@ -102,7 +102,7 @@ func (app *App_02) recordCommandBuffer(buffer vk.CommandBuffer, imageIndex uint3
 
 	vk.CmdEndRenderPass(buffer)
 
-	if r := vk.EndCommandBuffer(buffer); r != vk.SUCCESS {
-		panic("Could not end command buffer recording! " + r.String())
+	if err := vk.EndCommandBuffer(buffer); err != nil {
+		panic("Could not end command buffer recording! " + err.Error())
 	}
 }

@@ -99,9 +99,9 @@ func (app *App_01) createGraphicsPipeline() {
 
 	pipelineLayoutCreateInfo := vk.PipelineLayoutCreateInfo{}
 
-	r, p := vk.CreatePipelineLayout(app.device, &pipelineLayoutCreateInfo, nil)
-	if r != vk.SUCCESS {
-		panic(r)
+	p, err := vk.CreatePipelineLayout(app.device, &pipelineLayoutCreateInfo, nil)
+	if err != nil {
+		panic(err)
 	}
 	app.pipelineLayout = p
 
@@ -124,14 +124,14 @@ func (app *App_01) createGraphicsPipeline() {
 		Subpass:    0,
 	}
 
-	r, gp := vk.CreateGraphicsPipelines(
+	gp, err := vk.CreateGraphicsPipelines(
 		app.device,
 		0, // vk.NULL_HANDLE missing
 		[]vk.GraphicsPipelineCreateInfo{pipelineCreateInfo},
 		nil,
 	)
-	if r != vk.SUCCESS {
-		panic(r)
+	if err != nil {
+		panic(err)
 	}
 	app.graphicsPipeline = gp[0]
 }
@@ -189,9 +189,9 @@ func (app *App_01) createRenderPass() {
 		PDependencies: []vk.SubpassDependency{dependency},
 	}
 
-	var r vk.Result
-	if r, app.renderPass = vk.CreateRenderPass(app.device, &renderPassCreateInfo, nil); r != vk.SUCCESS {
-		panic(r)
+	var err error
+	if app.renderPass, err = vk.CreateRenderPass(app.device, &renderPassCreateInfo, nil); err != nil {
+		panic(err)
 	}
 }
 
@@ -207,9 +207,9 @@ func (app *App_01) createFramebuffers() {
 			Layers:       1,
 		}
 
-		r, fb := vk.CreateFramebuffer(app.device, &framebufferCreateInfo, nil)
-		if r != vk.SUCCESS {
-			panic(r)
+		fb, err := vk.CreateFramebuffer(app.device, &framebufferCreateInfo, nil)
+		if err != nil {
+			panic(err)
 		}
 		app.swapChainFramebuffers[i] = fb
 	}
@@ -248,8 +248,8 @@ func (app *App_01) createShaderModule(filename string) vk.ShaderModule {
 		smCI.PCode = (*uint32)(unsafe.Pointer(&dat[0]))
 	}
 
-	if r, mod := vk.CreateShaderModule(app.device, &smCI, nil); r != vk.SUCCESS {
-		panic(r)
+	if mod, err := vk.CreateShaderModule(app.device, &smCI, nil); err != nil {
+		panic(err)
 	} else {
 		return mod
 	}

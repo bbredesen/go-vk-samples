@@ -16,8 +16,8 @@ func main() {
 	fmt.Printf("Win32 Vulkan - Uniform Buffers\n")
 	fmt.Printf("This program demonstrates the use of uniform buffers in Vulkan.\n\n")
 
-	if r, ver := vk.EnumerateInstanceVersion(); r != vk.SUCCESS {
-		fmt.Printf("ERROR: Could not get installed Vulkan version. Result code was %s\n", r.String())
+	if ver, err := vk.EnumerateInstanceVersion(); err != nil {
+		fmt.Printf("ERROR: Could not get installed Vulkan version. Result code was %s\n", err.Error())
 		// ERROR_OUT_OF_HOST_MEMORY is the only error code possible, per the spec.
 	} else {
 		fmt.Printf("Vulkan Library API version %s\n", versionToString(ver))

@@ -54,8 +54,8 @@ func (app *App_04) createTextureImage() {
 
 	stagingBuffer, stagingBufferMemory := app.createBuffer(vk.BUFFER_USAGE_TRANSFER_SRC_BIT, size, vk.MEMORY_PROPERTY_HOST_VISIBLE_BIT|vk.MEMORY_PROPERTY_HOST_COHERENT_BIT)
 
-	if r, ptr := vk.MapMemory(app.device, stagingBufferMemory, 0, size, 0); r != vk.SUCCESS {
-		panic("Could not map memory for texture staging buffer: " + r.String())
+	if ptr, err := vk.MapMemory(app.device, stagingBufferMemory, 0, size, 0); err != nil {
+		panic("Could not map memory for texture staging buffer: " + err.Error())
 	} else {
 		vk.MemCopySlice(unsafe.Pointer(ptr), imgData)
 		vk.UnmapMemory(app.device, stagingBufferMemory)
@@ -97,10 +97,10 @@ func (app *App_04) createImage(width, height uint32, format vk.Format, tiling vk
 		Samples:             vk.SAMPLE_COUNT_1_BIT,
 	}
 
-	var r vk.Result
+	var err error
 
-	if r, image = vk.CreateImage(app.device, &imageCI, nil); r != vk.SUCCESS {
-		panic("Could not create image: " + r.String())
+	if image, err = vk.CreateImage(app.device, &imageCI, nil); err != nil {
+		panic("Could not create image: " + err.Error())
 	}
 
 	memReq := vk.GetImageMemoryRequirements(app.device, image)
@@ -109,12 +109,12 @@ func (app *App_04) createImage(width, height uint32, format vk.Format, tiling vk
 		MemoryTypeIndex: app.findMemoryType(memReq.MemoryTypeBits, memProps),
 	}
 
-	if r, imageMemory = vk.AllocateMemory(app.device, &memAlloc, nil); r != vk.SUCCESS {
-		panic("Could not allocate memory for texture image: " + r.String())
+	if imageMemory, err = vk.AllocateMemory(app.device, &memAlloc, nil); err != nil {
+		panic("Could not allocate memory for texture image: " + err.Error())
 	}
 
-	if r := vk.BindImageMemory(app.device, image, imageMemory, 0); r != vk.SUCCESS {
-		panic("Could not bind texture image memory: " + r.String())
+	if err := vk.BindImageMemory(app.device, image, imageMemory, 0); err != nil {
+		panic("Could not bind texture image memory: " + err.Error())
 	}
 
 	return
@@ -203,8 +203,8 @@ func (app *App_04) createTextureSampler() {
 		UnnormalizedCoordinates: false,
 	}
 
-	var r vk.Result
-	if r, app.textureSampler = vk.CreateSampler(app.device, &samplerInfo, nil); r != vk.SUCCESS {
-		panic("Could not create texture image sampler: " + r.String())
+	var err error
+	if app.textureSampler, err = vk.CreateSampler(app.device, &samplerInfo, nil); err != nil {
+		panic("Could not create texture image sampler: " + err.Error())
 	}
 }
