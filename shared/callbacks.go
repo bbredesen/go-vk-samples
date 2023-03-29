@@ -20,6 +20,9 @@ func gonotify_windowWillClose(handle uintptr) {
 	// fmt.Println("window will close notification received")
 	globalChannel <- EventMessage{
 		Type: ET_Sys_Closed,
+		SystemEvent: &SystemEvent{
+			HandleForSurface: handle,
+		},
 	}
 	close(globalChannel)
 }
