@@ -96,14 +96,14 @@ func NewApp() *App_06 {
 
 func (app *App_06) MainLoop(ch <-chan shared.EventMessage) {
 
-	m := <-ch
+	m := <-ch // Block on the channel until the window has been created
 	if m.Type != shared.ET_Sys_Created {
 		panic("expected ET_Sys_Create to start mainloop")
 	}
 	app.InitVulkan()
 
 	for {
-	innerLoop:
+	messageLoop:
 		for {
 			select {
 			case m = <-ch:
@@ -117,12 +117,12 @@ func (app *App_06) MainLoop(ch <-chan shared.EventMessage) {
 					// fmt.Println("Button down")
 
 				}
-			default:
-				break innerLoop
+			default: // Channel is empty
+				break messageLoop
 
 			}
 		}
-		// Rendering goes here
+
 		app.drawFrame()
 	}
 }
