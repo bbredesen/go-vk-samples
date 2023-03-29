@@ -61,9 +61,11 @@ func (app *windowsApp) Run() error {
 	tmp := C.initWin32Window(C.int(app.reqWidth), C.int(app.reqHeight), C.int(app.reqLeft), C.int(app.reqTop))
 	app.hWnd = windows.HWND(unsafe.Pointer(tmp))
 
-	gonotify_windowCreated(uintptr(app.hWnd))
-
 	C.runWin32Window(C.HWND(unsafe.Pointer(app.hWnd)))
 
 	return nil
+}
+
+func (app *windowsApp) OkToClose(handle uintptr) {
+	C.wmnotify_okToClose((C.uintptr_t)(handle))
 }
