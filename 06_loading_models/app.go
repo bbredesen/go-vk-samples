@@ -103,15 +103,19 @@ func (app *App_06) MainLoop(ch <-chan shared.EventMessage) {
 	app.InitVulkan()
 
 	for {
-		// Read any system messages...input, resize, window close, etc.
-		// for m, open := <-ch; open; m, open = <-ch {
 	innerLoop:
 		for {
 			select {
-			case m := <-ch:
+			case m = <-ch:
 				switch m.Type {
 				case shared.ET_Sys_Closed:
+					app.CleanupVulkan()
+					app.OkToClose(m.SystemEvent.HandleForSurface)
 					return
+
+				case shared.ET_Mouse_ButtonDown:
+					// fmt.Println("Button down")
+
 				}
 			default:
 				break innerLoop

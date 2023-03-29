@@ -28,8 +28,6 @@ func main() {
 	// Initialize the app and open the window
 	app.Run("06_loading_models")
 
-	app.CleanupVulkan()
-
 	fmt.Println()
 	fmt.Println("Clean shutdown, exiting...")
 }
