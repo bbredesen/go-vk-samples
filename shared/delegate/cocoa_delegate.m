@@ -6,6 +6,15 @@
 
 #import <MetalKit/MetalKit.h>
 
+
+BOOL okToClose = FALSE;
+
+// Called from a different thread than the main message loop, so we can't directly call
+// DestroyWindow here.
+void wmnotify_okToClose(uintptr_t hWnd) {
+    okToClose = TRUE;
+}
+
 @implementation GVKApplicationDelegate:NSObject 
 // - (void)applicationWillFinishLaunching:(NSNotification *)notification {
 //     printf("*** delegate will finish launching\n");
@@ -14,6 +23,7 @@
 -(void) windowWillClose:(NSNotification *) notification
 {
     gonotify_windowWillClose((uintptr_t) notification.object);
+    while (!okToClose) { }
     [NSApp stop:(nil)];
 }
 

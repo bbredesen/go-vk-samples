@@ -57,3 +57,7 @@ func (app *darwinApp) DelegateCreateSurface(instance vk.Instance) (vk.SurfaceKHR
 
 	return vk.CreateMetalSurfaceEXT(instance, &ci, nil)
 }
+
+func (app *darwinApp) OkToClose(handle uintptr) {
+	C.wmnotify_okToClose((C.uintptr_t)(handle))
+}
