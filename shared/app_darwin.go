@@ -33,6 +33,8 @@ type darwinApp struct {
 // is closed.  You should start a goroutine to read the message channel provided
 // by this App. That channel will be closed after the window is closed.
 func (app *darwinApp) Run() error {
+	runtime.LockOSThread()
+
 	if app.reqWidth < 0 || app.reqHeight < 0 {
 		app.reqWidth = 640
 		app.reqHeight = 480

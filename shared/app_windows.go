@@ -3,6 +3,7 @@
 package shared
 
 import (
+	"runtime"
 	"unsafe"
 
 	"github.com/bbredesen/go-vk"
@@ -52,6 +53,7 @@ func (app *windowsApp) DelegateCreateSurface(instance vk.Instance) (vk.SurfaceKH
 }
 
 func (app *windowsApp) Run() error {
+	runtime.LockOSThread()
 
 	if app.reqWidth < 0 || app.reqHeight < 0 {
 		app.reqWidth = 640
