@@ -17,8 +17,12 @@ void runWin32Window(HWND hWnd);
 
 #endif
 
+void wmnotify_okToClose(uintptr_t handle);
+
 extern void gonotify_windowCreated(uintptr_t handle);
 extern void gonotify_windowWillClose(uintptr_t handle);
+// extern void gonotify_windowDestroyed(uintptr_t handle);
+
 extern void gonotify_windowResizeStart();
 extern void gonotify_windowResizeProgress(uint32_t width, uint32_t height);
 extern void gonotify_windowResizeComplete();

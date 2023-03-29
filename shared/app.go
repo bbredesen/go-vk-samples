@@ -21,6 +21,13 @@ type App interface {
 	// GetHandleForSurface() uintptr
 	Run() error
 
+	// OkToClose notifies the window system that it is ok to close the window at this point in time. This should be
+	// called by the app once a ET_Sys_Closed message is received. The window system will cause this message to be sent
+	// when the user has requested to close the window. The OkToClose callback is needed to avoid destroying the window
+	// in the middle of a draw call, which will cause a crash instead of a clean shutdown.
+	// The app should exit the message loop after calling this function.
+	OkToClose(handle uintptr)
+
 	GetRequiredInstanceExtensions() []string
 
 	DelegateCreateSurface(instance vk.Instance) (vk.SurfaceKHR, error)

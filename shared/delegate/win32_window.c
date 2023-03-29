@@ -2,6 +2,8 @@
 #include "go_bridge.h"
 
 #include <Windows.h>
+#include <windowsx.h>
+#include <wingdi.h>
 #include <stdio.h>
 
 #define UNICODE
@@ -51,17 +53,44 @@ void runWin32Window(HWND hWnd) {
     }
 }
 
+BOOL okToClose = FALSE;
+
+// Called from a different thread than the main message loop, so we can't directly call
+// DestroyWindow here.
+void wmnotify_okToClose(uintptr_t hWnd) {
+    okToClose = TRUE;
+}
+
 LRESULT wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)  {
 
     switch (msg) {
     case WM_CLOSE:
-		DestroyWindow(hWnd);
         gonotify_windowWillClose((uintptr_t) hWnd);
-		return 0;
+        while (!okToClose) { }
+		DestroyWindow(hWnd);
+		break;
 
 	case WM_DESTROY:
 		PostQuitMessage(0);
-		return 0;
+		break;
+
+    case WM_CREATE:
+        gonotify_windowCreated((uintptr_t) hWnd);
+        break;
+
+    case WM_PAINT:
+        {
+            PAINTSTRUCT ps;
+            HDC hdc = BeginPaint(hWnd, &ps);
+        
+            FillRect(hdc, &ps.rcPaint, (HBRUSH) (COLOR_WINDOW+1));
+            EndPaint(hWnd, &ps);
+            break;
+        }
+
+    case WM_LBUTTONDOWN:
+        gonotify_mouseDown(0, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), 0);
+        break;
 
 // TODO: Mouse clicks, movement, drag, key down, key up
 
