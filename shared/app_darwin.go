@@ -9,6 +9,7 @@ package shared
 import "C"
 
 import (
+	"runtime"
 	"unsafe"
 
 	"github.com/bbredesen/go-vk"
