@@ -15,6 +15,34 @@ void wmnotify_okToClose(uintptr_t hWnd) {
     okToClose = TRUE;
 }
 
+
+uint32_t getUTF8Rune(NSEvent *event) {
+    char u8[4];
+    [event.characters getCString:u8 maxLength:4 encoding:NSUTF8StringEncoding];
+    return *(uint32_t*)(u8);
+}
+
+uint32_t getModifiers(NSEvent *event) {
+    // Modifers have to be mapped to our internal representation
+    uint32_t mods = 0;
+
+    if (event.modifierFlags&NSEventModifierFlagShift) {
+        mods |= KeyModAnyShift;
+    }
+    if (event.modifierFlags&NSEventModifierFlagControl) {
+        mods |= KeyModAnyCtrl;
+    }
+    if (event.modifierFlags&NSEventModifierFlagOption) {
+        mods |= KeyModAnyAlt;
+    }
+    if (event.modifierFlags&NSEventModifierFlagCommand) {
+        mods |= KeyModAnyMeta;
+    }
+
+    return mods;
+}
+
+
 @implementation GVKApplicationDelegate:NSObject 
 // - (void)applicationWillFinishLaunching:(NSNotification *)notification {
 //     printf("*** delegate will finish launching\n");
@@ -62,32 +90,6 @@ void wmnotify_okToClose(uintptr_t hWnd) {
     return YES;
 }
 
-uint32_t getUTF8Rune(NSEvent *event) {
-    char u8[4];
-    [event.characters getCString:u8 maxLength:4 encoding:NSUTF8StringEncoding];
-    return *(uint32_t*)(u8);
-}
-
-uint32_t getModifiers(NSEvent *event) {
-    // Modifers have to be mapped to our internal representation
-    uint32_t mods = 0;
-
-    if (event.modifierFlags&NSEventModifierFlagShift) {
-        mods |= KeyModAnyShift;
-    }
-    if (event.modifierFlags&NSEventModifierFlagControl) {
-        mods |= KeyModAnyCtrl;
-    }
-    if (event.modifierFlags&NSEventModifierFlagOption) {
-        mods |= KeyModAnyAlt;
-    }
-    if (event.modifierFlags&NSEventModifierFlagCommand) {
-        mods |= KeyModAnyMeta;
-    }
-
-    return mods;
-}
-
 -(void) keyDown:(NSEvent *)event {
     gonotify_keyDown(event.keyCode, getUTF8Rune(event), getModifiers(event));
 }
@@ -96,19 +98,27 @@ uint32_t getModifiers(NSEvent *event) {
 }
 
 -(void) mouseDown:(NSEvent *)event {
-    gonotify_mouseDown(0, event.locationInWindow.x, event.locationInWindow.y, getModifiers(event));
+    gonotify_mouseDown(MouseBtnLeft, NSEvent.pressedMouseButtons, event.locationInWindow.x, event.locationInWindow.y, getModifiers(event));
 }
 -(void) mouseUp:(NSEvent *)event {
-    gonotify_mouseUp(0, event.locationInWindow.x, event.locationInWindow.y, getModifiers(event));
+    gonotify_mouseUp(MouseBtnLeft, NSEvent.pressedMouseButtons, event.locationInWindow.x, event.locationInWindow.y, getModifiers(event));
 }
 -(void) rightMouseUp:(NSEvent *)event {
-    gonotify_mouseDown(1, event.locationInWindow.x, event.locationInWindow.y, getModifiers(event));
+    gonotify_mouseDown(MouseBtnRight, NSEvent.pressedMouseButtons, event.locationInWindow.x, event.locationInWindow.y, getModifiers(event));
 }
 -(void) rightMouseDown:(NSEvent *)event {
-    gonotify_mouseUp(1, event.locationInWindow.x, event.locationInWindow.y, getModifiers(event));
+    gonotify_mouseUp(MouseBtnRight, NSEvent.pressedMouseButtons, event.locationInWindow.x, event.locationInWindow.y, getModifiers(event));
+}
+
+-(void) mouseMoved:(NSEvent *)event {
+    NSPoint loc = [self convertPoint: [event locationInWindow] fromView:nil];
+    if ([self mouse:loc inRect:[self bounds]]) {
+        gonotify_mouseMove(NSEvent.pressedMouseButtons,  event.locationInWindow.x, event.locationInWindow.y, getModifiers(event));
+    }
 }
 
 
 @end
+
 
 #endif

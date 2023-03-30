@@ -50,6 +50,8 @@ void* initCocoaWindow(const char *title, int width, int height, int left, int to
     [NSApp setDelegate:del];
     [window setDelegate:del];
 
+    [window setAcceptsMouseMovedEvents:YES];
+
     GVKView *view = [[GVKView alloc] initWithFrame:contentRect];
     [window setContentView:view];
 
