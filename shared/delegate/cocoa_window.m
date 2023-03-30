@@ -5,7 +5,7 @@
 
 #include <stdio.h>
 
-void* initCocoaWindow(int width, int height, int left, int top) {
+void* initCocoaWindow(const char *title, int width, int height, int left, int top) {
     [NSAutoreleasePool new];
     [NSApplication sharedApplication];
 
@@ -58,8 +58,10 @@ void* initCocoaWindow(int width, int height, int left, int top) {
     } else {
         [window cascadeTopLeftFromPoint:NSMakePoint(left, top)];
     }
+    
+    NSString *winTitle = [[NSString alloc] initWithUTF8String: title];
 
-    [window setTitle:appName];
+    [window setTitle:winTitle];
     [window makeKeyAndOrderFront:nil];
     [NSApp activateIgnoringOtherApps:YES];
 

@@ -10,6 +10,7 @@ import "C"
 
 import (
 	"runtime"
+	"syscall"
 	"unsafe"
 
 	"github.com/bbredesen/go-vk"
@@ -40,7 +41,10 @@ func (app *darwinApp) Run() error {
 		app.reqWidth = 640
 		app.reqHeight = 480
 	}
-	app.caLayer = C.initCocoaWindow(C.int(app.reqWidth), C.int(app.reqHeight), C.int(app.reqLeft), C.int(app.reqTop))
+
+	titleBytes, _ := syscall.BytePtrFromString(app.title)
+
+	app.caLayer = C.initCocoaWindow((*C.char)(unsafe.Pointer(titleBytes)), C.int(app.reqWidth), C.int(app.reqHeight), C.int(app.reqLeft), C.int(app.reqTop))
 
 	C.runCocoaWindow()
 	return nil

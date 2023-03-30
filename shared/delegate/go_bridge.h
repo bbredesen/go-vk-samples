@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 #if defined(__APPLE__) && defined(__MACH__)
-void* initCocoaWindow(int width, int height, int left, int top);
+void* initCocoaWindow(const char *title, int width, int height, int left, int top);
 void runCocoaWindow();
 #endif
 
