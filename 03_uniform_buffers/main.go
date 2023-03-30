@@ -25,14 +25,7 @@ func main() {
 
 	app := NewApp()
 
-	// Initialize the app and open the window
-	// app.Initialize("03_uniform_buffers_win32")
-
-	// app.InitVulkan()
-	// app.MainLoop()
 	app.Run("03_uniform_buffers")
-
-	app.CleanupVulkan()
 
 	fmt.Println()
 	fmt.Println("Clean shutdown, exiting...")

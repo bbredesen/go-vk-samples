@@ -13,7 +13,7 @@ import (
 // Buffers" chapter
 
 func main() {
-	fmt.Printf("Win32 Vulkan - Uniform Buffers\n")
+	fmt.Printf("go-vk - Uniform Buffers\n")
 	fmt.Printf("This program demonstrates the use of uniform buffers in Vulkan.\n\n")
 
 	if ver, err := vk.EnumerateInstanceVersion(); err != nil {
@@ -26,8 +26,6 @@ func main() {
 	app := NewApp()
 
 	app.Run("05_depth_buffer")
-
-	app.CleanupVulkan()
 
 	fmt.Println()
 	fmt.Println("Clean shutdown, exiting...")

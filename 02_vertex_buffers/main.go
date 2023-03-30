@@ -13,7 +13,7 @@ import (
 // a triangle" chapter
 
 func main() {
-	fmt.Printf("go-vk Vulkan - Vertex Buffers\n")
+	fmt.Printf("go-vk - Vertex Buffers\n")
 	fmt.Printf("This program demonstrates the use of vertex buffers in Vulkan.\n\n")
 
 	if ver, err := vk.EnumerateInstanceVersion(); err != nil {
@@ -26,12 +26,6 @@ func main() {
 	app := NewApp()
 
 	app.Run("02_vertex_buffers")
-	// Initialize the app and open the window
-	// app.Initialize("02_vertex_buffers")
-
-	// app.InitVulkan()
-	// app.MainLoop()
-	app.CleanupVulkan()
 
 	fmt.Println()
 	fmt.Println("Clean shutdown, exiting...")

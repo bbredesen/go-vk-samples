@@ -54,48 +54,52 @@ type App_01 struct {
 }
 
 func NewApp() *App_01 {
-	app := &App_01{
-		enableInstanceExtensions: []string{
-			"VK_EXT_debug_report",
-			"VK_EXT_debug_utils",
-		},
-		enableDeviceExtensions: []string{"VK_KHR_swapchain"},
-		enableApiLayers:        []string{},
+	sharedApp, _ := shared.NewApp()
+
+	return &App_01{
+		App:                      sharedApp,
+		eventsChannel:            sharedApp.GetEventChannel(),
+		enableInstanceExtensions: sharedApp.GetRequiredInstanceExtensions(),
+		enableDeviceExtensions:   []string{"VK_KHR_swapchain"},
+		enableApiLayers:          []string{},
 	}
-
-	var err error
-	if app.App, err = shared.NewApp(); err != nil {
-		panic(err)
-	}
-
-	app.enableInstanceExtensions = append(app.enableInstanceExtensions, app.App.GetRequiredInstanceExtensions()...)
-
-	return app
 }
 
 func (app *App_01) MainLoop(ch <-chan shared.EventMessage) {
 
-	// Read any system messages...input, resize, window close, etc.
-	for m, open := <-ch; open; m, open = <-ch {
-		switch m.Type {
-		case shared.ET_Sys_Created:
-			app.windowHandle = m.HandleForSurface
-			app.InitVulkan()
-		case shared.ET_Sys_Closed:
-			return
-		}
-		// Rendering goes here
-		app.drawFrame()
+	m := <-ch // Block on the channel until the window has been created
+	if m.Type != shared.ET_Sys_Created {
+		panic("expected ET_Sys_Create to start mainloop")
+	}
+	app.InitVulkan()
 
+	for {
+	messageLoop:
+		for {
+			select {
+			case m = <-ch:
+				switch m.Type {
+				case shared.ET_Sys_Closed:
+					app.CleanupVulkan()
+					app.OkToClose(m.SystemEvent.HandleForSurface)
+					return
+
+				}
+			default: // Channel is empty
+				break messageLoop
+
+			}
+		}
+
+		app.drawFrame()
 	}
 }
 
 func (app *App_01) Run(windowTitle string) {
+
 	go app.MainLoop(app.App.GetEventChannel())
 
-	if err := app.App.Run(); err != nil {
-		panic(err)
-	}
+	app.App.Run()
 
 }
 

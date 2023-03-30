@@ -13,7 +13,7 @@ import (
 // Buffers" chapter
 
 func main() {
-	fmt.Printf("Win32 Vulkan - Uniform Buffers\n")
+	fmt.Printf("go-vk - Uniform Buffers\n")
 	fmt.Printf("This program demonstrates the use of uniform buffers in Vulkan.\n\n")
 
 	if ver, err := vk.EnumerateInstanceVersion(); err != nil {
@@ -24,13 +24,8 @@ func main() {
 	}
 
 	app := NewApp()
-	app.Run("04_texture_mapping_win32")
-	// Initialize the app and open the window
-	// app.Initialize("04_texture_mapping_win32")
 
-	// app.InitVulkan()
-	// app.MainLoop()
-	app.CleanupVulkan()
+	app.Run("04_texture_mapping")
 
 	fmt.Println()
 	fmt.Println("Clean shutdown, exiting...")

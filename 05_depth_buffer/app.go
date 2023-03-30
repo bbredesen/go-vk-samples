@@ -94,39 +94,37 @@ func NewApp() *App_05 {
 
 func (app *App_05) MainLoop(ch <-chan shared.EventMessage) {
 
-	m := <-ch
+	m := <-ch // Block on the channel until the window has been created
 	if m.Type != shared.ET_Sys_Created {
-		panic("expected ET_Sys_Create to start mainloop")
+		panic("expected ET_Sys_Create to start main loop")
 	}
 	app.InitVulkan()
 
 	for {
-		// Read any system messages...input, resize, window close, etc.
-		// for m, open := <-ch; open; m, open = <-ch {
-	innerLoop:
+	messageLoop:
 		for {
 			select {
-			case m := <-ch:
+			case m = <-ch:
 				switch m.Type {
 				case shared.ET_Sys_Closed:
+					app.CleanupVulkan()
+					app.OkToClose(m.SystemEvent.HandleForSurface)
 					return
+
 				}
-			default:
-				break innerLoop
+			default: // Channel is empty
+				break messageLoop
 
 			}
 		}
-		// Rendering goes here
+
 		app.drawFrame()
 	}
 }
 
 func (app *App_05) Run(windowTitle string) {
-
 	go app.MainLoop(app.App.GetEventChannel())
-
 	app.App.Run()
-
 }
 
 func (app *App_05) InitVulkan() {

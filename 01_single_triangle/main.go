@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"runtime"
 
 	"github.com/bbredesen/go-vk"
 )
@@ -14,18 +13,7 @@ import (
 // a triangle" chapter
 
 func main() {
-	// This is needed to arrange that main() runs on main thread.
-	// See documentation for functions that are only allowed to be called from the main thread.
-	runtime.LockOSThread()
-
-	// err := glfw.Init()
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// defer glfw.Terminate()
-	// log.Println("glfw initialized")
-
-	fmt.Printf("Vulkan - Drawing a Triangle\n")
+	fmt.Printf("go-vk - Drawing a Triangle\n")
 	fmt.Printf("This program demonstrates opening a window, setting up the basics for Vulkan rendering, and draws a single triangle.\n\n")
 
 	if ver, err := vk.EnumerateInstanceVersion(); err != nil {
@@ -39,10 +27,6 @@ func main() {
 
 	// Initialize the app and open the window
 	app.Run("01_single_triangle")
-
-	// app.InitVulkan()
-	// app.MainLoop()
-	app.CleanupVulkan()
 
 	fmt.Println()
 	fmt.Println("Clean shutdown, exiting...")
