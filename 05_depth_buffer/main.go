@@ -25,6 +25,23 @@ func main() {
 
 	app := NewApp()
 
+	if props, err := vk.EnumerateInstanceLayerProperties(); err != nil {
+		panic("Could not enumerate available layers: " + err.Error())
+	} else {
+		foundValidationLayers := false
+		for _, p := range props {
+			if p.LayerName == "VK_LAYER_KHRONOS_validation" {
+				app.enableApiLayers = append(app.enableApiLayers, p.LayerName)
+				foundValidationLayers = true
+				break
+			}
+		}
+
+		if !foundValidationLayers {
+			fmt.Println("NOTE: Khronos validation layer was not found!") // This is normal if you don't have the LunarG SDK or when using MoltenVK
+		}
+	}
+
 	app.Run("05_depth_buffer")
 
 	fmt.Println()
