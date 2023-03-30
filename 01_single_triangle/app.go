@@ -53,8 +53,8 @@ type App_01 struct {
 	vertShaderModule, fragShaderModule vk.ShaderModule
 }
 
-func NewApp() *App_01 {
-	sharedApp, _ := shared.NewApp()
+func NewApp(windowTitle string) *App_01 {
+	sharedApp, _ := shared.NewApp(windowTitle)
 
 	return &App_01{
 		App:                      sharedApp,
@@ -95,7 +95,7 @@ func (app *App_01) MainLoop(ch <-chan shared.EventMessage) {
 	}
 }
 
-func (app *App_01) Run(windowTitle string) {
+func (app *App_01) Run() {
 
 	go app.MainLoop(app.App.GetEventChannel())
 

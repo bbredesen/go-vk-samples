@@ -23,7 +23,7 @@ func main() {
 		fmt.Printf("Vulkan Library API version %s\n", versionToString(ver))
 	}
 
-	app := NewApp()
+	app := NewApp("go-vk Sample: 03_uniform_buffers")
 
 	if props, err := vk.EnumerateInstanceLayerProperties(); err != nil {
 		panic("Could not enumerate available layers: " + err.Error())
@@ -42,7 +42,7 @@ func main() {
 		}
 	}
 
-	app.Run("03_uniform_buffers")
+	app.Run()
 
 	fmt.Println()
 	fmt.Println("Clean shutdown, exiting...")

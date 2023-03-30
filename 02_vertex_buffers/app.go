@@ -56,8 +56,8 @@ type App_02 struct {
 	vertexBufferMemory, indexBufferMemory vk.DeviceMemory
 }
 
-func NewApp() *App_02 {
-	sharedApp, _ := shared.NewApp()
+func NewApp(windowTitle string) *App_02 {
+	sharedApp, _ := shared.NewApp(windowTitle)
 
 	return &App_02{
 		App:                      sharedApp,
@@ -98,7 +98,7 @@ func (app *App_02) MainLoop(ch <-chan shared.EventMessage) {
 	}
 }
 
-func (app *App_02) Run(windowTitle string) {
+func (app *App_02) Run() {
 	go app.MainLoop(app.App.GetEventChannel())
 	app.App.Run()
 }

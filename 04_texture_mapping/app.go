@@ -78,8 +78,8 @@ type App_04 struct {
 	textureSampler     vk.Sampler
 }
 
-func NewApp() App_04 {
-	sharedApp, _ := shared.NewApp()
+func NewApp(windowTitle string) App_04 {
+	sharedApp, _ := shared.NewApp(windowTitle)
 
 	return App_04{
 		App:                      sharedApp,
@@ -122,7 +122,7 @@ func (app *App_04) MainLoop(ch <-chan shared.EventMessage) {
 	}
 }
 
-func (app *App_04) Run(windowTitle string) {
+func (app *App_04) Run() {
 	go app.MainLoop(app.App.GetEventChannel())
 	app.App.Run()
 }

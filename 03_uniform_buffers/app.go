@@ -72,8 +72,8 @@ type App_03 struct {
 	currentImage uint32
 }
 
-func NewApp() App_03 {
-	sharedApp, _ := shared.NewApp()
+func NewApp(windowTitle string) App_03 {
+	sharedApp, _ := shared.NewApp(windowTitle)
 
 	return App_03{
 		App:           sharedApp,
@@ -117,7 +117,7 @@ func (app *App_03) MainLoop(ch <-chan shared.EventMessage) {
 	}
 }
 
-func (app *App_03) Run(windowTitle string) {
+func (app *App_03) Run() {
 	go app.MainLoop(app.App.GetEventChannel())
 	app.App.Run()
 }
