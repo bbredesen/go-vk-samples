@@ -34,11 +34,13 @@ type App interface {
 }
 
 type sharedApp struct {
+	title                                string
 	reqWidth, reqHeight, reqLeft, reqTop int
 }
 
-func newSharedApp() sharedApp {
+func newSharedApp(windowTitle string) sharedApp {
 	return sharedApp{
+		title:     windowTitle,
 		reqWidth:  -1,
 		reqHeight: -1,
 		reqLeft:   -1,

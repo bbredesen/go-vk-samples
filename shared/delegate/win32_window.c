@@ -10,12 +10,12 @@
 
 LRESULT wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-HWND initWin32Window(int width, int height, int left, int top) {
+HWND initWin32Window(uint16_t *title, int width, int height, int left, int top) {
     HINSTANCE hInstance = GetModuleHandle(NULL);
     HCURSOR cursor = LoadCursor(NULL, IDC_ARROW);
 
     LPCWSTR classname = L"go-vk-samples-shared";
-    LPCWSTR wintitle = L"TODO SHARED WINDOW";
+    LPCWSTR wintitle = title;
 
     WNDCLASSW wndClass = { 0 };
     wndClass.style = CS_OWNDC|CS_HREDRAW|CS_VREDRAW;

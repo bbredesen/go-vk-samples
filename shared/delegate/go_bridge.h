@@ -12,7 +12,7 @@ void runCocoaWindow();
 
 #include <Windows.h>
 
-HWND initWin32Window(int width, int height, int left, int top);
+HWND initWin32Window(uint16_t *title, int width, int height, int left, int top);
 void runWin32Window(HWND hWnd);
 
 #endif

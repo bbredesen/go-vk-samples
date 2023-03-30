@@ -16,9 +16,9 @@ import (
 */
 import "C"
 
-func NewApp() (App, error) {
+func NewApp(windowTitle string) (App, error) {
 	app := &windowsApp{
-		sharedApp: newSharedApp(),
+		sharedApp: newSharedApp(windowTitle),
 		reqWidth:  -1,
 		reqHeight: -1,
 		reqLeft:   -1,
@@ -60,7 +60,12 @@ func (app *windowsApp) Run() error {
 		app.reqHeight = 480
 	}
 
-	tmp := C.initWin32Window(C.int(app.reqWidth), C.int(app.reqHeight), C.int(app.reqLeft), C.int(app.reqTop))
+	txString, err := windows.UTF16PtrFromString(app.title)
+	if err != nil {
+		panic("Could not convert window title to UTF16: " + err.Error())
+	}
+
+	tmp := C.initWin32Window((*C.ushort)(txString), C.int(app.reqWidth), C.int(app.reqHeight), C.int(app.reqLeft), C.int(app.reqTop))
 	app.hWnd = windows.HWND(unsafe.Pointer(tmp))
 
 	C.runWin32Window(C.HWND(unsafe.Pointer(app.hWnd)))
