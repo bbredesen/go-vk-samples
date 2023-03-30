@@ -9,6 +9,8 @@
 #define UNICODE
 
 LRESULT wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+KeyModBitFlags getModifierKeys();
+MouseBtnBitFlags getButtons(WPARAM wParam);
 
 HWND initWin32Window(uint16_t *title, int width, int height, int left, int top) {
     HINSTANCE hInstance = GetModuleHandle(NULL);
@@ -89,7 +91,28 @@ LRESULT wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)  {
         }
 
     case WM_LBUTTONDOWN:
-        gonotify_mouseDown(0, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), 0);
+        gonotify_mouseDown(MouseBtnLeft, getButtons(wParam), GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), getModifierKeys());
+        break;
+    case WM_LBUTTONUP:
+        gonotify_mouseUp(MouseBtnLeft, getButtons(wParam), GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), getModifierKeys());
+        break;
+
+    case WM_RBUTTONDOWN:
+        gonotify_mouseDown(MouseBtnRight, getButtons(wParam), GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), getModifierKeys());
+        break;
+    case WM_RBUTTONUP:
+        gonotify_mouseUp(MouseBtnRight, getButtons(wParam), GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), getModifierKeys());
+        break;
+
+    case WM_MBUTTONDOWN:
+        gonotify_mouseDown(MouseBtnMiddle, getButtons(wParam), GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), getModifierKeys());
+        break;
+    case WM_MBUTTONUP:
+        gonotify_mouseUp(MouseBtnMiddle, getButtons(wParam), GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), getModifierKeys());
+        break;
+
+    case WM_MOUSEMOVE:
+        gonotify_mouseMove(getButtons(wParam), GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), getModifierKeys());
         break;
 
 // TODO: Mouse clicks, movement, drag, key down, key up
@@ -99,4 +122,50 @@ LRESULT wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)  {
     }
 
     return 0;
+}
+
+KeyModBitFlags getModifierKeys() {
+    KeyModBitFlags modifiers = 0;
+    if (GetKeyState(VK_LSHIFT)&0x8000) {
+        modifiers &= KeyModLeftShift;
+    }
+    if (GetKeyState(VK_RSHIFT)&0x8000) {
+        modifiers &= KeyModRightShift;
+    }
+    if (GetKeyState(VK_LCONTROL)&0x8000) {
+        modifiers &= KeyModLeftCtrl;
+    }
+    if (GetKeyState(VK_RCONTROL)&0x8000) {
+        modifiers &= KeyModRightCtrl;
+    }
+    if (GetKeyState(VK_LMENU)&0x8000) {
+        modifiers &= KeyModLeftAlt;
+    }
+    if (GetKeyState(VK_RMENU)&0x8000) {
+        modifiers &= KeyModRightAlt;
+    }
+    if (GetKeyState(VK_LWIN)&0x8000) {
+        modifiers &= KeyModLeftMeta;
+    }
+    if (GetKeyState(VK_RWIN)&0x8000) {
+        modifiers &= KeyModRightMeta;
+    }
+
+    return modifiers;
+}
+
+MouseBtnBitFlags getButtons(WPARAM wParam) {
+
+    MouseBtnBitFlags buttons = MouseBtnNone;
+    if (wParam & MK_LBUTTON) {
+        buttons |= MouseBtnLeft;
+    }
+    if (wParam & MK_RBUTTON) {
+        buttons |= MouseBtnRight;
+    }
+    if (wParam & MK_MBUTTON) {
+        buttons |= MouseBtnMiddle;
+    }
+
+    return buttons;
 }
