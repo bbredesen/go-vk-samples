@@ -113,9 +113,6 @@ func (app *App_06) MainLoop(ch <-chan shared.EventMessage) {
 					app.OkToClose(m.SystemEvent.HandleForSurface)
 					return
 
-				case shared.ET_Mouse_ButtonDown:
-					// fmt.Println("Button down")
-
 				}
 			default: // Channel is empty
 				break messageLoop

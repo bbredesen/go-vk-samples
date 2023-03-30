@@ -79,12 +79,13 @@ func gonotify_keyUp(keyCode uint16, keyRune uint32, modifiers uint32) {
 }
 
 //export gonotify_mouseDown
-func gonotify_mouseDown(button uint8, locationX, locationY uint16, modifiers uint32) {
+func gonotify_mouseDown(button, allButtons uint8, locationX, locationY uint16, modifiers uint32) {
 	// fmt.Println("Button", button, "at", locationX, locationY)
 	msg := EventMessage{
 		Type: ET_Mouse_ButtonDown,
 		MouseEvent: &MouseEvent{
-			TriggerButtonMask: button,
+			TriggerButtonMask: MouseBtnBitFlags(button),
+			ButtonsMask:       MouseBtnBitFlags(allButtons),
 			LocationX:         uint16(locationX),
 			LocationY:         uint16(locationY),
 			Modifiers:         KeyModBitFlags(modifiers),
@@ -94,15 +95,35 @@ func gonotify_mouseDown(button uint8, locationX, locationY uint16, modifiers uin
 }
 
 //export gonotify_mouseUp
-func gonotify_mouseUp(button uint8, locationX, locationY uint16, modifiers uint32) {
+func gonotify_mouseUp(button, allButtons uint8, locationX, locationY uint16, modifiers uint32) {
 	// fmt.Println("Button", button, "at", locationX, locationY)
 	msg := EventMessage{
 		Type: ET_Mouse_ButtonUp,
 		MouseEvent: &MouseEvent{
-			TriggerButtonMask: button,
+			TriggerButtonMask: MouseBtnBitFlags(button),
+			ButtonsMask:       MouseBtnBitFlags(allButtons),
 			LocationX:         uint16(locationX),
 			LocationY:         uint16(locationY),
 			Modifiers:         KeyModBitFlags(modifiers),
+		},
+	}
+	globalChannel <- msg
+}
+
+//export gonotify_mouseMove
+func gonotify_mouseMove(buttons uint8, locationX, locationY uint16, modifiers uint32) {
+	t := ET_Mouse_Move
+	if MouseBtnBitFlags(buttons) != MouseBtnNone {
+		t = ET_Mouse_Drag
+	}
+
+	msg := EventMessage{
+		Type: t,
+		MouseEvent: &MouseEvent{
+			ButtonsMask: MouseBtnBitFlags(buttons),
+			LocationX:   uint16(locationX),
+			LocationY:   uint16(locationY),
+			Modifiers:   KeyModBitFlags(modifiers),
 		},
 	}
 	globalChannel <- msg

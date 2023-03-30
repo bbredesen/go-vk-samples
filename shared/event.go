@@ -20,6 +20,7 @@ const (
 	ET_Sys_Created
 	// Sent when the window has closed. Guaranteed to be the last event sent.
 	ET_Sys_Closed
+
 	ET_Sys_Minimize
 	ET_Sys_UnMinimize
 	ET_Sys_Maximize
@@ -41,9 +42,9 @@ type EventMessage struct {
 }
 
 type MouseEvent struct {
-	TriggerButtonMask    uint8  // Only one bit will be set, and only for ButtonDown, ButtonUp, and Click events
-	ButtonsMask          uint8  // NOT CURRENTLY HANDLED. Potentially multiple bits will be set, showing the state of all buttons at the time of this event
-	LocationX, LocationY uint16 // Event location in the window active area. (0,0) is [system dependent? Always lower left?]
+	TriggerButtonMask    MouseBtnBitFlags // Only one bit will be set, and only for ButtonDown, ButtonUp, and Click events
+	ButtonsMask          MouseBtnBitFlags // Potentially multiple bits will be set, showing the state of all buttons at the time of this event
+	LocationX, LocationY uint16           // Event location in the window active area. (0,0) is [system dependent? Always lower left?]
 	Modifiers            KeyModBitFlags
 }
 
@@ -78,6 +79,15 @@ const (
 	KeyModAnyCtrl  KeyModBitFlags = KeyModLeftCtrl | KeyModRightCtrl
 	KeyModAnyAlt   KeyModBitFlags = KeyModLeftAlt | KeyModRightAlt
 	KeyModAnyMeta  KeyModBitFlags = KeyModLeftMeta | KeyModRightMeta
+)
+
+type MouseBtnBitFlags uint8
+
+const (
+	MouseBtnNone   MouseBtnBitFlags = 0
+	MouseBtnLeft   MouseBtnBitFlags = 1 << 0
+	MouseBtnRight  MouseBtnBitFlags = 1 << 1
+	MouseBtnMiddle MouseBtnBitFlags = 1 << 2
 )
 
 // SystemEvent todo...window handle, process handle, others?

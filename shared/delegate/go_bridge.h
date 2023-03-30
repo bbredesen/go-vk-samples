@@ -30,8 +30,10 @@ extern void gonotify_windowResizeComplete();
 extern void gonotify_keyDown(uint16_t keyCode, uint32_t keyRune, uint32_t modifiers);
 extern void gonotify_keyUp(uint16_t keyCode, uint32_t keyRune, uint32_t modifiers);
 
-extern void gonotify_mouseDown(uint8_t button, uint16_t locationX, uint16_t locationY, uint32_t modifiers);
-extern void gonotify_mouseUp(uint8_t button, uint16_t locationX, uint16_t locationY, uint32_t modifiers);
+extern void gonotify_mouseDown(uint8_t button, uint8_t allButtons, uint16_t locationX, uint16_t locationY, uint32_t modifiers);
+extern void gonotify_mouseUp(uint8_t button, uint8_t allButtons, uint16_t locationX, uint16_t locationY, uint32_t modifiers);
+extern void gonotify_mouseMove(uint8_t allButtons, uint16_t locationX, uint16_t locationY, uint32_t modifiers);
+
 
 // These values are manually duplicated from event.go, as Cgo does not export any var or const values, only functions
 typedef uint32_t KeyModBitFlags;
@@ -49,5 +51,12 @@ static const KeyModBitFlags KeyModAnyShift = KeyModLeftShift | KeyModRightShift;
 static const KeyModBitFlags KeyModAnyCtrl  = KeyModLeftCtrl | KeyModRightCtrl;
 static const KeyModBitFlags KeyModAnyAlt   = KeyModLeftAlt | KeyModRightAlt;
 static const KeyModBitFlags KeyModAnyMeta  = KeyModLeftMeta | KeyModRightMeta;
+
+typedef uint8_t MouseBtnBitFlags;
+
+static const MouseBtnBitFlags MouseBtnNone   = 0;
+static const MouseBtnBitFlags MouseBtnLeft   = 1 << 0;
+static const MouseBtnBitFlags MouseBtnRight  = 1 << 1;
+static const MouseBtnBitFlags MouseBtnMiddle = 1 << 2;
 
 #endif
