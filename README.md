@@ -18,15 +18,11 @@ The "0n_" series of samples follow the project found at [Vulkan-Tutorial.com](ht
 * 06_loading_models - Loading Wavefront OBJ models from a file
 * 07_generating_mipmaps - Generating, binding and using mipmap textures - TODO - Not yet implemented
 * 08_multisampling - TODO - Not yet implemented
-* instanced_rendering - TODO - Not yet implemented - Instanced model, repeated N times at different positions, scales,
-  etc. (4k instances?)
 
 The "shared" directory contains a very basic OS-independent app structure, with implementations for Win32 and MacOS/Cocoa.
 Operating system events are passed into a channel that the sample applications should empty before drawing each frame. Reading that channel should happen in a separate goroutine, as the windowing code is locked to the main thread, and blocks in App.Run() loop as long as the window is open.
 
 ## Other samples and pending projects:
 
-- Glyph rendering from TTF using stencils (https://github.com/bbredesen/ttf-renderer)
+- Glyph rendering from TTF using stencils (https://github.com/bbredesen/ttf-renderer) - Could be migrated to this project
 - glTF model viewer - (https://github.com/bbredesen/gltf-viewer) - WIP
-- Extension demos and testing - TODO
-- Compute shaders - Possibly preculling a large scene, or post-processing graphics pipeline output. - TODO
