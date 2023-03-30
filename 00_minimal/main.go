@@ -15,7 +15,7 @@ func main() {
 
 	var err error
 
-	fmt.Printf("Minimal Vulkan - Validate API Presence\n")
+	fmt.Printf("Minimal go-vk - Validate API Presence\n")
 	fmt.Printf("This program does the absolute minimum amount of work to validate go-vk, which is to get and print your Vulkan version, create an instance, and then destroy it.\n\n")
 
 	if ver, err := vk.EnumerateInstanceVersion(); err != nil {
