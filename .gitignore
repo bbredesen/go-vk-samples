@@ -1,2 +1,7 @@
 .vscode/
-**/*.spv
+*.spv
+
+*.lib
+*.a
+*.o
+*.exe
