@@ -14,9 +14,9 @@ import (
 	"github.com/bbredesen/go-vk"
 )
 
-func NewApp() (App, error) {
+func NewApp(windowTitle string) (App, error) {
 	app := &darwinApp{
-		newSharedApp(),
+		newSharedApp(windowTitle),
 		nil,
 	}
 
