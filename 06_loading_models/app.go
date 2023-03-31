@@ -81,7 +81,8 @@ type App_06 struct {
 }
 
 func NewApp(windowTitle string) *App_06 {
-	sharedApp, _ := shared.NewApp(windowTitle)
+	// sharedApp, _ := shared.NewApp(windowTitle)
+	sharedApp, _ := shared.NewGLFWApp(windowTitle)
 
 	return &App_06{
 		App:                      sharedApp,

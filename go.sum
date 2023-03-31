@@ -1,11 +1,13 @@
 github.com/bbredesen/gltf v0.0.0-20230304155607-fc029d20508e h1:ofmFTAIEaznp2VW8CiXe4K/AifmSV1VJMY/MtguhCd8=
 github.com/bbredesen/gltf v0.0.0-20230304155607-fc029d20508e/go.mod h1:aBVPYcZqshbMgvoaO7xsqR10PsVQD3+jv3+k4AHKcOk=
-github.com/bbredesen/go-vk v1.2.203-0.2.0 h1:A+yKH9CRTDkEGYMXoop1WbAm7zJ+nqggwGabUQVIM/s=
-github.com/bbredesen/go-vk v1.2.203-0.2.0/go.mod h1:/EeS73bQon2oAIADH//1ceElCl+YxodjpfN4u12JcUs=
+github.com/bbredesen/go-vk v1.3.240-0.1.1 h1:Knbulr5f5K5gm4p4J22UZWZ7SGmPON831wuLO2oaBHU=
+github.com/bbredesen/go-vk v1.3.240-0.1.1/go.mod h1:l9a11qk7n4n9II8cpccUG2JwtxOq9O6py5ixRnbFE2c=
 github.com/bbredesen/vkm v0.2.2 h1:TGhJruX9z0uAE3AONRIbYacimesUmFccnw68Q/GjYnw=
 github.com/bbredesen/vkm v0.2.2/go.mod h1:MjhNAnfvgNbTyBhXOmJXvExlWa216q5BqQJFQT8W9Vg=
 github.com/chewxy/math32 v1.10.1 h1:LFpeY0SLJXeaiej/eIp2L40VYfscTvKh/FSEZ68uMkU=
 github.com/chewxy/math32 v1.10.1/go.mod h1:dOB2rcuFrCn6UHrze36WSLVPKtzPMRAQvBvUwkSsLqs=
+github.com/go-gl/glfw/v3.3/glfw v0.0.0-20221017161538-93cebf72946b h1:GgabKamyOYguHqHjSkDACcgoPIz3w0Dis/zJ1wyHHHU=
+github.com/go-gl/glfw/v3.3/glfw v0.0.0-20221017161538-93cebf72946b/go.mod h1:tQ2UAYgL5IevRw8kRxooKSPJfGvJ9fJQFa0TUsXzTg8=
 github.com/udhos/gwob v0.0.0-20200524213453-619810f75817 h1:4M105Yb9NHJ/sI3xAS3WbXt4d09q940504X5zE5JM7s=
 github.com/udhos/gwob v0.0.0-20200524213453-619810f75817/go.mod h1:kOhibXY50yGPKNcoFg+KDoC4hGzyJ6YX0wfKHhThntk=
 golang.org/x/sys v0.6.0 h1:MVltZSvRTcU2ljQOhs94SXPftV6DCNnZViHeQps87pQ=

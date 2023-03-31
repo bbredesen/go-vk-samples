@@ -13,4 +13,4 @@ require github.com/bbredesen/gltf v0.0.0-20230304155607-fc029d20508e
 
 require github.com/chewxy/math32 v1.10.1
 
-// replace github.com/bbredesen/go-vk v0.0.1 => ../go-vk
+require github.com/go-gl/glfw/v3.3/glfw v0.0.0-20221017161538-93cebf72946b // indirect
