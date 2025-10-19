@@ -142,6 +142,7 @@ func (app *App_06) InitVulkan() {
 
 	app.createSwapchain()
 	app.createSwapchainImageViews()
+	app.createDepthResources()
 
 	app.createCommandPool()
 
@@ -152,8 +153,6 @@ func (app *App_06) InitVulkan() {
 	app.createTextureImage()
 	app.createTextureImageView()
 	app.createTextureSampler()
-
-	app.createDepthResources()
 
 	app.createDescriptorPool()
 	app.createDescriptorSets()
@@ -210,6 +209,7 @@ func (app *App_06) drawFrame() {
 	if app.currentImage, err = vk.AcquireNextImageKHR(app.device, app.swapchain, ^uint64(0), app.imageAvailableSemaphore, vk.Fence(vk.NULL_HANDLE)); err != nil {
 		if err == vk.SUBOPTIMAL_KHR || err == vk.ERROR_OUT_OF_DATE_KHR {
 			app.recreateSwapchain()
+
 			return
 		} else {
 			panic("Could not acquire next image! " + err.Error())

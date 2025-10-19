@@ -213,8 +213,15 @@ func (app *App_03) recreateSwapchain() {
 	}
 
 	app.cleanupSwapchain()
+	app.cleanupGraphicsPipeline()
+	app.destroySyncObjects()
 
 	app.createSwapchain()
 	app.createImageViews()
+
+	app.createRenderPass()
+	app.createGraphicsPipeline()
 	app.createFramebuffers()
+
+	app.createSyncObjects()
 }

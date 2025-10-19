@@ -191,10 +191,19 @@ func (app *App_06) recreateSwapchain() {
 	}
 
 	app.cleanupSwapchain()
+	app.cleanupDepthResources()
+	app.cleanupGraphicsPipeline()
+	app.destroySyncObjects()
 
 	app.createSwapchain()
 	app.createSwapchainImageViews()
+	app.createDepthResources()
+
+	app.createRenderPass()
+	app.createGraphicsPipeline()
 	app.createFramebuffers()
+
+	app.createSyncObjects()
 }
 
 func (app *App_06) createImageView(image vk.Image, format vk.Format, aspectMask vk.ImageAspectFlags) vk.ImageView {
