@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/bbredesen/go-vk"
 )
@@ -17,6 +18,10 @@ func main() {
 
 	fmt.Printf("Minimal go-vk - Validate API Presence\n")
 	fmt.Printf("This program does the absolute minimum amount of work to validate go-vk, which is to get and print your Vulkan version, create an instance, and then destroy it.\n\n")
+
+	if override := os.Getenv("GOVK_SAMPLES_VULKAN_LIB"); override != "" {
+		vk.OverrideDefaultVulkanLibrary(override)
+	}
 
 	if ver, err := vk.EnumerateInstanceVersion(); err != nil {
 		fmt.Printf("ERROR: Could not get installed Vulkan version. Result code was %s\n", err.Error())
