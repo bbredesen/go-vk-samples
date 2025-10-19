@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/bbredesen/go-vk"
 )
@@ -15,6 +16,10 @@ import (
 func main() {
 	fmt.Printf("go-vk - Drawing a Triangle\n")
 	fmt.Printf("This program demonstrates opening a window, setting up the basics for Vulkan rendering, and draws a single triangle.\n\n")
+
+	if override := os.Getenv("GOVK_SAMPLES_VULKAN_LIB"); override != "" {
+		vk.OverrideDefaultVulkanLibrary(override)
+	}
 
 	if ver, err := vk.EnumerateInstanceVersion(); err != nil {
 		fmt.Println("ERROR: Could not get installed Vulkan version.")
