@@ -3,10 +3,11 @@ module github.com/bbredesen/go-vk-samples
 go 1.19
 
 require (
-	github.com/bbredesen/go-vk v1.2.203-0.2.0
+	github.com/bbredesen/go-vk v1.3.290-0.3.3
 	github.com/bbredesen/vkm v0.2.2
 	github.com/udhos/gwob v0.0.0-20200524213453-619810f75817
-	golang.org/x/sys v0.6.0
+	github.com/veandco/go-sdl2 v0.4.40
+	golang.org/x/sys v0.37.0
 )
 
 require github.com/bbredesen/gltf v0.0.0-20230304155607-fc029d20508e
