@@ -6,13 +6,15 @@ import (
 	"github.com/bbredesen/go-vk"
 	"github.com/bbredesen/vkm"
 	"github.com/sirupsen/logrus"
+
+	// "github.com/sirupsen/logrus"
 	"golang.org/x/image/font/sfnt"
 	"golang.org/x/image/math/fixed"
 )
 
 const buffer_size = 4096
 
-func (app *App) loadBuffers(segments sfnt.Segments, bounds fixed.Rectangle26_6) {
+func (app *App_10) loadBuffers(segments sfnt.Segments, bounds fixed.Rectangle26_6) {
 	verts, inds, quadVerts, quadInds := convertSegmentsToVerts(segments, bounds)
 
 	stagingBuffer, stagingMemory := app.createBuffer(vk.BUFFER_USAGE_TRANSFER_SRC_BIT, buffer_size, vk.MEMORY_PROPERTY_HOST_COHERENT_BIT)
@@ -28,9 +30,9 @@ func (app *App) loadBuffers(segments sfnt.Segments, bounds fixed.Rectangle26_6) 
 
 	app.indexCount = len(inds)
 
-	r, ptr := vk.MapMemory(app.Device, stagingMemory, 0, buffer_size, 0)
-	if r != vk.SUCCESS {
-		panic(r)
+	ptr, err := vk.MapMemory(app.device, stagingMemory, 0, buffer_size, 0)
+	if err != nil {
+		panic(err)
 	}
 
 	vk.MemCopySlice(unsafe.Pointer(ptr), inds)
@@ -39,9 +41,9 @@ func (app *App) loadBuffers(segments sfnt.Segments, bounds fixed.Rectangle26_6) 
 	vk.MemCopySlice(unsafe.Pointer(ptr), verts)
 	app.copyBuffer(stagingBuffer, app.vertexBuffer, buffer_size)
 
-	vk.UnmapMemory(app.Device, stagingMemory)
-	vk.DestroyBuffer(app.Device, stagingBuffer, nil)
-	vk.FreeMemory(app.Device, stagingMemory, nil)
+	vk.UnmapMemory(app.device, stagingMemory)
+	vk.DestroyBuffer(app.device, stagingBuffer, nil)
+	vk.FreeMemory(app.device, stagingMemory, nil)
 
 }
 
@@ -151,56 +153,11 @@ func convertSegmentsToVerts(segments sfnt.Segments, bounds fixed.Rectangle26_6) 
 	return
 }
 
-func (app *App) destroyBuffers() {
-	vk.DestroyBuffer(app.Device, app.indexBuffer, nil)
-	vk.FreeMemory(app.Device, app.indexBufferMemory, nil)
+func (app *App_10) destroyBuffers() {
+	vk.DestroyBuffer(app.device, app.indexBuffer, nil)
+	vk.FreeMemory(app.device, app.indexBufferMemory, nil)
 
-	vk.DestroyBuffer(app.Device, app.vertexBuffer, nil)
-	vk.FreeMemory(app.Device, app.vertexBufferMemory, nil)
+	vk.DestroyBuffer(app.device, app.vertexBuffer, nil)
+	vk.FreeMemory(app.device, app.vertexBufferMemory, nil)
 
-}
-
-func (app *App) copyBuffer(srcBuffer, dstBuffer vk.Buffer, size vk.DeviceSize) {
-	cbuf := app.BeginOneTimeCommands()
-
-	region := vk.BufferCopy{
-		SrcOffset: 0,
-		DstOffset: 0,
-		Size:      size,
-	}
-
-	vk.CmdCopyBuffer(cbuf, srcBuffer, dstBuffer, []vk.BufferCopy{region})
-
-	app.EndOneTimeCommands(cbuf)
-}
-
-func (app *App) createBuffer(usage vk.BufferUsageFlags, size vk.DeviceSize, memProps vk.MemoryPropertyFlags) (buffer vk.Buffer, memory vk.DeviceMemory) {
-
-	bufferCI := vk.BufferCreateInfo{
-		Size:        size,
-		Usage:       usage,
-		SharingMode: vk.SHARING_MODE_EXCLUSIVE,
-	}
-
-	var r vk.Result
-
-	if r, buffer = vk.CreateBuffer(app.Device, &bufferCI, nil); r != vk.SUCCESS {
-		panic("Could not create buffer: " + r.String())
-	}
-
-	memReq := vk.GetBufferMemoryRequirements(app.Device, buffer)
-
-	memAllocInfo := vk.MemoryAllocateInfo{
-		AllocationSize:  memReq.Size,
-		MemoryTypeIndex: uint32(app.FindMemoryType(memReq.MemoryTypeBits, memProps)), //vk.MEMORY_PROPERTY_HOST_VISIBLE_BIT|vk.MEMORY_PROPERTY_HOST_COHERENT_BIT)),
-	}
-
-	if r, memory = vk.AllocateMemory(app.Device, &memAllocInfo, nil); r != vk.SUCCESS {
-		panic("Could not allocate memory for buffer: " + r.String())
-	}
-	if r := vk.BindBufferMemory(app.Device, buffer, memory, 0); r != vk.SUCCESS {
-		panic("Could not bind memory for buffer: " + r.String())
-	}
-
-	return
 }

@@ -1,94 +1,29 @@
 package main
 
-//go:generate glslc.exe shaders/quad_shader.vert -o shaders/quad_vert.spv
-//go:generate glslc.exe shaders/shader.vert -o shaders/vert.spv
-//go:generate glslc.exe shaders/quad_shader.frag -o shaders/quad_frag.spv
-//go:generate glslc.exe shaders/shader.frag -o shaders/frag.spv
-
 import (
 	"os"
 	"unsafe"
 
 	"github.com/bbredesen/go-vk"
-	"github.com/bbredesen/ttf-renderer/vkctx"
 )
 
-type VulkanPipeline struct {
-	ctx               *vkctx.Context
-	pipelineLayout    vk.PipelineLayout
-	graphicsPipelines []vk.Pipeline
+func (app *App_10) createGraphicsPipeline() {
+	app.vertShaderModule = app.createShaderModule("shaders/vert.spv")
+	app.fragShaderModule = app.createShaderModule("shaders/frag.spv")
 
-	// Renderpass
-	renderPass vk.RenderPass
-
-	stencilSubpass, colorSubpass     vk.SubpassDescription
-	stencilImage, colorImage         vk.Image
-	stencilMemory, colorMemory       vk.DeviceMemory
-	stencilImageView, colorImageView vk.ImageView
-
-	vertShaderModule, quadVertShaderModule, fragShaderModule, quadFragShaderModule vk.ShaderModule
-}
-
-func (vp *VulkanPipeline) Initialize(ctx *vkctx.Context) {
-	vp.ctx = ctx
-	vp.stencilImage, vp.stencilMemory = ctx.CreateImage(ctx.SwapchainExtent, vk.FORMAT_S8_UINT, vk.IMAGE_TILING_OPTIMAL, vk.IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, vk.MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
-	vp.stencilImageView = ctx.CreateImageView(vp.stencilImage, vk.FORMAT_S8_UINT, vk.IMAGE_ASPECT_STENCIL_BIT)
-
-	vp.colorImage, vp.colorMemory = ctx.CreateImage(ctx.SwapchainExtent, vk.FORMAT_R32G32B32A32_SFLOAT, vk.IMAGE_TILING_OPTIMAL, vk.IMAGE_USAGE_COLOR_ATTACHMENT_BIT, vk.MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
-	vp.colorImageView = ctx.CreateImageView(vp.colorImage, vk.FORMAT_R32G32B32A32_SFLOAT, vk.IMAGE_ASPECT_COLOR_BIT)
-
-	vp.CreateRenderPass()
-
-	vp.CreateFramebuffers()
-
-	vp.CreateGraphicsPipelines()
-}
-
-func (vp *VulkanPipeline) standardViewport() *vk.PipelineViewportStateCreateInfo {
-
-	viewport := vk.Viewport{
-		X:        0.0,
-		Y:        0.0,
-		Width:    float32(vp.ctx.SwapchainExtent.Width),
-		Height:   float32(vp.ctx.SwapchainExtent.Height),
-		MinDepth: 0.0,
-		MaxDepth: 1.0,
-	}
-
-	scissor := vk.Rect2D{
-		Offset: vk.Offset2D{X: 0, Y: 0},
-		Extent: vp.ctx.SwapchainExtent,
-	}
-
-	return &vk.PipelineViewportStateCreateInfo{
-		PViewports: []vk.Viewport{viewport},
-		PScissors:  []vk.Rect2D{scissor},
-	}
-
-}
-
-func (vp *VulkanPipeline) CreateGraphicsPipelines() {
-	// Two pipelines to build, three bindings
-	// 1) Triangle fans for rough outline of shapes in stencil
-	// 2) Triangles for quad curves in stencil
-	// 3) Re-bind tri fans for color render
-
-	vp.vertShaderModule = vp.createShaderModule("shaders/vert.spv")
-	vp.fragShaderModule = vp.createShaderModule("shaders/frag.spv")
-
-	vp.quadVertShaderModule = vp.createShaderModule("shaders/quad_vert.spv")
-	vp.quadFragShaderModule = vp.createShaderModule("shaders/quad_frag.spv")
+	app.quadVertShaderModule = app.createShaderModule("shaders/quad_vert.spv")
+	app.quadFragShaderModule = app.createShaderModule("shaders/quad_frag.spv")
 
 	p0_vertShaderStageCreateInfo := vk.PipelineShaderStageCreateInfo{
 		Stage:               vk.SHADER_STAGE_VERTEX_BIT,
-		Module:              vp.vertShaderModule,
+		Module:              app.vertShaderModule,
 		PName:               "main",
 		PSpecializationInfo: &vk.SpecializationInfo{},
 	}
 
 	p0_fragShaderStageCreateInfo := vk.PipelineShaderStageCreateInfo{
 		Stage:               vk.SHADER_STAGE_FRAGMENT_BIT,
-		Module:              vp.fragShaderModule,
+		Module:              app.fragShaderModule,
 		PName:               "main",
 		PSpecializationInfo: &vk.SpecializationInfo{},
 	}
@@ -97,36 +32,35 @@ func (vp *VulkanPipeline) CreateGraphicsPipelines() {
 		p0_vertShaderStageCreateInfo, p0_fragShaderStageCreateInfo,
 	}
 
-	// TODO
-	bindings := []vk.VertexInputBindingDescription{
-		{
-			Binding: 0,
-			Stride:  uint32(5 * unsafe.Sizeof(float32(0))),
-		},
-	}
-	attrs := []vk.VertexInputAttributeDescription{
-		{
-			Location: 0,
-			Binding:  0,
-			Format:   vk.FORMAT_R32G32_SFLOAT,
-			Offset:   0,
-		},
-		{
-			Location: 1,
-			Binding:  0,
-			Format:   vk.FORMAT_R32G32B32_SFLOAT,
-			Offset:   uint32(2 * unsafe.Sizeof(float32(0))),
-		},
-	}
-
 	vertexInputCreateInfo := vk.PipelineVertexInputStateCreateInfo{
-		PVertexBindingDescriptions:   bindings,
-		PVertexAttributeDescriptions: attrs,
+		PNext:                        nil,
+		Flags:                        0,
+		PVertexBindingDescriptions:   []vk.VertexInputBindingDescription{getVertexBindingDescription()},
+		PVertexAttributeDescriptions: getVertexAttributeDescriptions(),
 	}
 
 	inputAssemblyCreateInfo := vk.PipelineInputAssemblyStateCreateInfo{
 		Topology:               vk.PRIMITIVE_TOPOLOGY_TRIANGLE_FAN,
 		PrimitiveRestartEnable: true,
+	}
+
+	viewport := vk.Viewport{
+		X:        0.0,
+		Y:        0.0,
+		Width:    float32(app.swapchainExtent.Width),
+		Height:   float32(app.swapchainExtent.Height),
+		MinDepth: 0.0,
+		MaxDepth: 1.0,
+	}
+
+	scissor := vk.Rect2D{
+		Offset: vk.Offset2D{X: 0, Y: 0},
+		Extent: app.swapchainExtent,
+	}
+
+	viewportStateCreateInfo := vk.PipelineViewportStateCreateInfo{
+		PViewports: []vk.Viewport{viewport},
+		PScissors:  []vk.Rect2D{scissor},
 	}
 
 	rasterizerCreateInfo := vk.PipelineRasterizationStateCreateInfo{
@@ -135,7 +69,7 @@ func (vp *VulkanPipeline) CreateGraphicsPipelines() {
 		PolygonMode:             vk.POLYGON_MODE_FILL,
 		LineWidth:               1.0,
 		CullMode:                vk.CULL_MODE_NONE,
-		FrontFace:               vk.FRONT_FACE_CLOCKWISE,
+		FrontFace:               vk.FRONT_FACE_COUNTER_CLOCKWISE,
 		DepthBiasEnable:         false,
 	}
 
@@ -167,55 +101,19 @@ func (vp *VulkanPipeline) CreateGraphicsPipelines() {
 		PAttachments: []vk.PipelineColorBlendAttachmentState{colorBlendAttachment},
 	}
 
-	// depthStencilStateCreateInfo := vk.PipelineDepthStencilStateCreateInfo{
-	// 	StencilTestEnable: true,
-	// 	Front: vk.StencilOpState{
-	// 		FailOp:      vk.STENCIL_OP_INCREMENT_AND_WRAP,
-	// 		PassOp:      vk.STENCIL_OP_INCREMENT_AND_WRAP,
-	// 		DepthFailOp: 0,
-	// 		CompareOp:   vk.COMPARE_OP_ALWAYS,
-	// 		CompareMask: 0x01,
-	// 		WriteMask:   0xFF,
-	// 		Reference:   1,
-	// 	},
+	// dynamicStateCreateInfo := vk.PipelineDynamicStateCreateInfo{
+	// 	PDynamicStates: []vk.DynamicState{vk.DYNAMIC_STATE_VIEWPORT, vk.DYNAMIC_STATE_SCISSOR},
 	// }
-	// depthStencilStateCreateInfo.Back = depthStencilStateCreateInfo.Front
-
-	viewport := vk.Viewport{
-		X:        0.0,
-		Y:        0.0,
-		Width:    float32(vp.ctx.SwapchainExtent.Width),
-		Height:   float32(vp.ctx.SwapchainExtent.Height),
-		MinDepth: 0.0,
-		MaxDepth: 1.0,
-	}
-
-	scissor := vk.Rect2D{
-		Offset: vk.Offset2D{X: 0, Y: 0},
-		Extent: vp.ctx.SwapchainExtent,
-	}
-
-	viewportStateCreateInfo := vk.PipelineViewportStateCreateInfo{
-		PViewports: []vk.Viewport{viewport},
-		PScissors:  []vk.Rect2D{scissor},
-	}
 
 	pipelineLayoutCreateInfo := vk.PipelineLayoutCreateInfo{
-		PSetLayouts:         []vk.DescriptorSetLayout{},
-		PPushConstantRanges: []vk.PushConstantRange{},
+		PSetLayouts: []vk.DescriptorSetLayout{}, //app.descriptorSetLayout
 	}
 
-	var r vk.Result
-	if r, vp.pipelineLayout = vk.CreatePipelineLayout(vp.ctx.Device, &pipelineLayoutCreateInfo, nil); r != vk.SUCCESS {
-		panic(r)
+	p, err := vk.CreatePipelineLayout(app.device, &pipelineLayoutCreateInfo, nil)
+	if err != nil {
+		panic(err)
 	}
-
-	/* Rendering method:
-	Each outline is drawn as a triangle fan from the start point of that outline. TTF fonts specify a clockwise winding rule
-	for determining the "interior" of a glyph. The stencil operation below increments the stencil value on for front faces
-	(i.e. drawn clockwise) and decrements the value for back faces. For the second subpass, the stencil test rule is changed
-	to pass any fragments with a non-zero stencil value.
-	*/
+	app.pipelineLayout = p
 
 	depthStencilStateCreateInfo := vk.PipelineDepthStencilStateCreateInfo{
 		StencilTestEnable: true,
@@ -243,14 +141,17 @@ func (vp *VulkanPipeline) CreateGraphicsPipelines() {
 		PRasterizationState: &rasterizerCreateInfo,
 		PMultisampleState:   &multisampleCreateInfo,
 		PColorBlendState:    &colorBlendStateCreateInfo,
+		PDepthStencilState:  &depthStencilStateCreateInfo,
 
-		PDepthStencilState: &depthStencilStateCreateInfo,
+		PTessellationState: &vk.PipelineTessellationStateCreateInfo{},
+		PDynamicState:      &vk.PipelineDynamicStateCreateInfo{}, // dynamicStateCreateInfo,
 
-		Layout:     vp.pipelineLayout,
-		RenderPass: vp.renderPass,
+		Layout:     app.pipelineLayout,
+		RenderPass: app.renderPass,
 		Subpass:    0,
 	}
 
+	// Modify a copy of the initial pipeline for the second pass
 	p1CreateInfo := pipelineCreateInfo
 	ia := inputAssemblyCreateInfo
 	p1CreateInfo.PInputAssemblyState = &ia
@@ -260,20 +161,19 @@ func (vp *VulkanPipeline) CreateGraphicsPipelines() {
 	p1CreateInfo.PStages = make([]vk.PipelineShaderStageCreateInfo, 2)
 	copy(p1CreateInfo.PStages, p0_shaderStages)
 
-	p1CreateInfo.PStages[0].Module = vp.quadVertShaderModule
-	p1CreateInfo.PStages[1].Module = vp.quadFragShaderModule
+	p1CreateInfo.PStages[0].Module = app.quadVertShaderModule
+	p1CreateInfo.PStages[1].Module = app.quadFragShaderModule
 
-	var tmp []vk.Pipeline
-	if r, tmp = vk.CreateGraphicsPipelines(
-		vp.ctx.Device,
+	gp, err := vk.CreateGraphicsPipelines(
+		app.device,
 		vk.PipelineCache(vk.NULL_HANDLE),
 		[]vk.GraphicsPipelineCreateInfo{pipelineCreateInfo, p1CreateInfo},
 		nil,
-	); r != vk.SUCCESS {
-		panic(r)
+	)
+	if err != nil {
+		panic(err)
 	}
-
-	vp.graphicsPipelines = append(vp.graphicsPipelines, tmp...)
+	app.graphicsPipelines = append(app.graphicsPipelines, gp...)
 
 	depthStencilStateCreateInfo.DepthTestEnable = false
 	// depthStencilStateCreateInfo.StencilTestEnable = false
@@ -281,7 +181,6 @@ func (vp *VulkanPipeline) CreateGraphicsPipelines() {
 		// FailOp: vk.STENCIL_OP_REPLACE,
 		// DepthFailOp: vk.STENCIL_OP_KEEP,
 		// PassOp: vk.STENCIL_OP_KEEP,
-
 		CompareOp:   vk.COMPARE_OP_NOT_EQUAL,
 		CompareMask: 0xFF,
 		// WriteMask:   0xFF,
@@ -290,23 +189,23 @@ func (vp *VulkanPipeline) CreateGraphicsPipelines() {
 	depthStencilStateCreateInfo.Back = depthStencilStateCreateInfo.Front
 	pipelineCreateInfo.Subpass = 1
 
-	if r, tmp = vk.CreateGraphicsPipelines(
-		vp.ctx.Device,
+	if gp, err = vk.CreateGraphicsPipelines(
+		app.device,
 		vk.PipelineCache(vk.NULL_HANDLE),
 		[]vk.GraphicsPipelineCreateInfo{pipelineCreateInfo},
 		nil,
-	); r != vk.SUCCESS {
-		panic(r)
+	); err != vk.SUCCESS {
+		panic(err)
 	}
 
-	vp.graphicsPipelines = append(vp.graphicsPipelines, tmp[0])
+	app.graphicsPipelines = append(app.graphicsPipelines, gp[0])
 
 }
 
-func (vp *VulkanPipeline) CreateRenderPass() {
+func (app *App_10) createRenderPass() {
 
 	colorAttachmentDescription := vk.AttachmentDescription{
-		Format:  vp.ctx.SwapchainImageFormat,
+		Format:  app.swapchainImageFormat,
 		Samples: vk.SAMPLE_COUNT_1_BIT,
 		LoadOp:  vk.ATTACHMENT_LOAD_OP_CLEAR,
 		StoreOp: vk.ATTACHMENT_STORE_OP_STORE,
@@ -315,7 +214,8 @@ func (vp *VulkanPipeline) CreateRenderPass() {
 		StencilStoreOp: vk.ATTACHMENT_STORE_OP_DONT_CARE,
 
 		InitialLayout: vk.IMAGE_LAYOUT_UNDEFINED,
-		FinalLayout:   vk.IMAGE_LAYOUT_PRESENT_SRC_KHR,
+		// InitialLayout: vk.IMAGE_LAYOUT_PRESENT_SRC_KHR,
+		FinalLayout: vk.IMAGE_LAYOUT_PRESENT_SRC_KHR,
 	}
 
 	colorAttachmentRef := vk.AttachmentReference{
@@ -386,76 +286,61 @@ func (vp *VulkanPipeline) CreateRenderPass() {
 		PDependencies: []vk.SubpassDependency{dependencyToStencil, dependencyToColor},
 	}
 
-	var r vk.Result
-	if r, vp.renderPass = vk.CreateRenderPass(vp.ctx.Device, &renderPassCreateInfo, nil); r != vk.SUCCESS {
-		panic(r)
+	var err error
+	if app.renderPass, err = vk.CreateRenderPass(app.device, &renderPassCreateInfo, nil); err != nil {
+		panic(err)
 	}
 }
 
-func (vp *VulkanPipeline) CreateFramebuffers() {
+func (app *App_10) createFramebuffers() {
+	app.swapChainFramebuffers = make([]vk.Framebuffer, len(app.swapchainImageViews))
 
-	vp.ctx.SwapChainFramebuffers = make([]vk.Framebuffer, len(vp.ctx.SwapchainImageViews))
-
-	for i, iv := range vp.ctx.SwapchainImageViews {
+	for i, iv := range app.swapchainImageViews {
 		framebufferCreateInfo := vk.FramebufferCreateInfo{
-			RenderPass:   vp.renderPass,
-			PAttachments: []vk.ImageView{iv, vp.stencilImageView},
-			Width:        vp.ctx.SwapchainExtent.Width,
-			Height:       vp.ctx.SwapchainExtent.Height,
+			RenderPass:   app.renderPass,
+			PAttachments: []vk.ImageView{iv, app.stencilImageView},
+			Width:        app.swapchainExtent.Width,
+			Height:       app.swapchainExtent.Height,
 			Layers:       1,
 		}
 
-		r, fb := vk.CreateFramebuffer(vp.ctx.Device, &framebufferCreateInfo, nil)
-		if r != vk.SUCCESS {
-			panic(r)
+		fb, err := vk.CreateFramebuffer(app.device, &framebufferCreateInfo, nil)
+		if err != nil {
+			panic(err)
 		}
-		vp.ctx.SwapChainFramebuffers[i] = fb
+		app.swapChainFramebuffers[i] = fb
 	}
 }
 
-func (vp *VulkanPipeline) destroyFramebuffers() {
-	for _, fb := range vp.ctx.SwapChainFramebuffers {
-		vk.DestroyFramebuffer(vp.ctx.Device, fb, nil)
+func (app *App_10) destroyFramebuffers() {
+	for _, fb := range app.swapChainFramebuffers {
+		vk.DestroyFramebuffer(app.device, fb, nil)
 	}
-	vp.ctx.SwapChainFramebuffers = nil
+	app.swapChainFramebuffers = nil
 }
 
-func (vp *VulkanPipeline) Teardown() {
+func (app *App_10) cleanupGraphicsPipeline() {
 
-	vk.DestroyShaderModule(vp.ctx.Device, vp.vertShaderModule, nil)
-	vk.DestroyShaderModule(vp.ctx.Device, vp.fragShaderModule, nil)
-	vk.DestroyShaderModule(vp.ctx.Device, vp.quadVertShaderModule, nil)
-	vk.DestroyShaderModule(vp.ctx.Device, vp.quadFragShaderModule, nil)
-
-	vk.DestroyImageView(vp.ctx.Device, vp.colorImageView, nil)
-	vk.DestroyImageView(vp.ctx.Device, vp.stencilImageView, nil)
-
-	vk.DestroyImage(vp.ctx.Device, vp.colorImage, nil)
-	vk.DestroyImage(vp.ctx.Device, vp.stencilImage, nil)
-
-	vk.FreeMemory(vp.ctx.Device, vp.colorMemory, nil)
-	vk.FreeMemory(vp.ctx.Device, vp.stencilMemory, nil)
-
-	vp.destroyFramebuffers()
-
-	for _, gp := range vp.graphicsPipelines {
-		vk.DestroyPipeline(vp.ctx.Device, gp, nil)
+	for _, gp := range app.graphicsPipelines {
+		vk.DestroyPipeline(app.device, gp, nil)
 	}
-	vp.graphicsPipelines = nil
+	app.graphicsPipelines = nil
 
-	vk.DestroyPipelineLayout(vp.ctx.Device, vp.pipelineLayout, nil)
-	vp.pipelineLayout = vk.PipelineLayout(vk.NULL_HANDLE)
+	vk.DestroyPipelineLayout(app.device, app.pipelineLayout, nil)
 
-	// vk.DestroyShaderModule(app.ctx.Device, app.fragShaderModule, nil)
-	// app.fragShaderModule = vk.ShaderModule(vk.NULL_HANDLE)
-	// vk.DestroyShaderModule(app.device, app.vertShaderModule, nil)
-	// app.vertShaderModule = vk.ShaderModule(vk.NULL_HANDLE)
+	vk.DestroyShaderModule(app.device, app.fragShaderModule, nil)
+	app.fragShaderModule = vk.ShaderModule(vk.NULL_HANDLE)
+	vk.DestroyShaderModule(app.device, app.vertShaderModule, nil)
+	app.vertShaderModule = vk.ShaderModule(vk.NULL_HANDLE)
+	vk.DestroyShaderModule(app.device, app.quadFragShaderModule, nil)
+	app.quadFragShaderModule = vk.ShaderModule(vk.NULL_HANDLE)
+	vk.DestroyShaderModule(app.device, app.quadVertShaderModule, nil)
+	app.quadVertShaderModule = vk.ShaderModule(vk.NULL_HANDLE)
 
-	vk.DestroyRenderPass(vp.ctx.Device, vp.renderPass, nil)
-	vp.renderPass = vk.RenderPass(vk.NULL_HANDLE)
+	vk.DestroyRenderPass(app.device, app.renderPass, nil)
 }
 
-func (vp *VulkanPipeline) createShaderModule(filename string) vk.ShaderModule {
+func (app *App_10) createShaderModule(filename string) vk.ShaderModule {
 	smCI := vk.ShaderModuleCreateInfo{
 		CodeSize: 0,
 		PCode:    new(uint32),
@@ -468,8 +353,8 @@ func (vp *VulkanPipeline) createShaderModule(filename string) vk.ShaderModule {
 		smCI.PCode = (*uint32)(unsafe.Pointer(&dat[0]))
 	}
 
-	if r, mod := vk.CreateShaderModule(vp.ctx.Device, &smCI, nil); r != vk.SUCCESS {
-		panic(r)
+	if mod, err := vk.CreateShaderModule(app.device, &smCI, nil); err != nil {
+		panic(err)
 	} else {
 		return mod
 	}
