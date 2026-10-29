@@ -259,7 +259,7 @@ func (app *App_10) createRenderPass() {
 	// https://vulkan-tutorial.com/en/Drawing_a_triangle/Drawing/Rendering_and_presentation
 	// https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#VkSubpassDependency
 	// This creates an execution/timing dependency between this render pass and the "implied" subpass (the prior renderpass) before this
-	// renderpass begins. It specifiesd that the the color attachment output and depth testing stages in the prior pass
+	// renderpass begins. It specifies that the the color attachment output and depth testing stages in the prior pass
 	// need to be completed before we attempt to write the color and depth attachments in this pass.
 
 	dependencyToStencil := vk.SubpassDependency{

@@ -69,7 +69,7 @@ func (app *App_10) isDeviceSuitable(device vk.PhysicalDevice) bool {
 	/* Suitability is:
 	1) Support for the queue families we want to use (graphics)
 	2) Support for the surface presentation extensions we want to use
-	3) Support for swap chains // TODO
+	3) Support for swap chains
 	4) Support for sampler anisotropy
 	*/
 

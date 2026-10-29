@@ -150,7 +150,7 @@ func (app *App_10) createSwapchain() {
 	// 10) Finally, get the swapchain images and save them
 	images, err := vk.GetSwapchainImagesKHR(app.device, app.swapchain)
 	if err != nil {
-		fmt.Printf("Could not get images after createing swapchain!\n")
+		fmt.Printf("Could not get images after creating swapchain!\n")
 		panic(err)
 	}
 	app.swapchainImages = images
